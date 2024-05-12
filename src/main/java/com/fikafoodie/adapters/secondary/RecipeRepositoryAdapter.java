@@ -17,6 +17,7 @@ public class RecipeRepositoryAdapter implements RecipeRepositoryPort {
     @Transactional
     public Recipe save(Recipe recipe) {
         RecipeEntity entity = RecipeEntity.fromDomain(recipe);
+        entity.getIngredients().forEach(ingredientEntity -> ingredientEntity.persist());
         entity.persist();
         return entity.toDomain();
     }

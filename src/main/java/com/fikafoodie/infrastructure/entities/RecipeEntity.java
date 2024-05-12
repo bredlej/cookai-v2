@@ -33,7 +33,7 @@ public class RecipeEntity extends PanacheEntityBase {
 
     public RecipeEntity update(Recipe recipe) {
         this.setName(recipe.getName());
-        this.setIngredients(recipe.getIngredients().stream().map(IngredientEntity::fromDomain).toList());
+        this.setIngredients(recipe.getIngredients().stream().map(IngredientEntity::fromDomain).peek(p -> p.persist()).toList());
         this.setInstructions(String.join(DELIMETER, recipe.getInstructions()));
         this.setTags(String.join(DELIMETER, recipe.getTags()));
         this.setPhoto(recipe.getPhoto());

@@ -1,10 +1,9 @@
-package com.fikafoodie.domain.entities;
+package com.fikafoodie.domain.valueobjects;
 
 import lombok.Data;
 
 @Data
 public class Ingredient {
-    private String id;
     private String name;
     private double quantity;
     private String unit;
