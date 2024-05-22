@@ -28,11 +28,11 @@ class RecipeRepositoryAdapterTest {
         Ingredient ingredient = new Ingredient();
         ingredient.setName("Ingredient 1");
         Recipe recipe = new Recipe();
-        recipe.setId(UUID.randomUUID().toString());
-        recipe.setName("Recipe 1");
-        recipe.setIngredients(List.of(ingredient));
-        recipe.setInstructions(List.of("Instruction 1", "Instruction 2"));
-        recipe.setTags(List.of("Tag 1", "Tag 2"));
+        recipe.setId(new Recipe.Id(UUID.randomUUID().toString()));
+        recipe.setName(new Recipe.Name("Recipe 1"));
+        recipe.setIngredients(new Recipe.Ingredients(List.of(ingredient)));
+        recipe.setInstructions(new Recipe.Instructions(List.of("Instruction 1", "Instruction 2")));
+        recipe.setTags(new Recipe.Tags(List.of("Tag 1", "Tag 2")));
         // when
         Recipe savedRecipe = recipeRepositoryAdapter.save(recipe);
 
@@ -51,36 +51,36 @@ class RecipeRepositoryAdapterTest {
         Ingredient ingredient = new Ingredient();
         ingredient.setName("Ingredient 1");
         Recipe recipe = new Recipe();
-        recipe.setId(UUID.randomUUID().toString());
-        recipe.setName("Recipe 1");
-        recipe.setIngredients(List.of(ingredient));
-        recipe.setInstructions(List.of("Instruction 1", "Instruction 2"));
-        recipe.setTags(List.of("Tag 1", "Tag 2"));
+        recipe.setId(new Recipe.Id(UUID.randomUUID().toString()));
+        recipe.setName(new Recipe.Name("Recipe 1"));
+        recipe.setIngredients(new Recipe.Ingredients(List.of(ingredient)));
+        recipe.setInstructions(new Recipe.Instructions(List.of("Instruction 1", "Instruction 2")));
+        recipe.setTags(new Recipe.Tags(List.of("Tag 1", "Tag 2")));
         Recipe savedRecipe = recipeRepositoryAdapter.save(recipe);
-        savedRecipe.setName("Recipe 2");
-        savedRecipe.getIngredients().get(0).setName("Ingredient 2");
+        savedRecipe.setName(new Recipe.Name("Recipe 2"));
+        savedRecipe.getIngredients().value().getFirst().setName("Ingredient 2");
 
         // when
         Recipe updatedRecipe = recipeRepositoryAdapter.update(savedRecipe);
 
         // then
-        assertThat(updatedRecipe.getId(), notNullValue());
-        assertEquals(updatedRecipe.getName(), "Recipe 2");
-        assertEquals(updatedRecipe.getIngredients().get(0).getName(), "Ingredient 2");
+        assertThat(updatedRecipe.getId().value(), notNullValue());
+        assertEquals(updatedRecipe.getName().value(), "Recipe 2");
+        assertEquals(updatedRecipe.getIngredients().value().getFirst().getName(), "Ingredient 2");
 
         Ingredient ingredientNew = new Ingredient();
         ingredientNew.setName("Ingredient 3");
 
-        savedRecipe.setIngredients(List.of(ingredient, ingredientNew));
+        savedRecipe.setIngredients(new Recipe.Ingredients(List.of(ingredient, ingredientNew)));
         Recipe updatedRecipeNew = recipeRepositoryAdapter.update(savedRecipe);
-        assertEquals(updatedRecipeNew.getIngredients().size(), 2);
-        assertEquals(updatedRecipeNew.getIngredients().get(0).getName(), "Ingredient 1");
-        assertEquals(updatedRecipeNew.getIngredients().get(1).getName(), "Ingredient 3");
+        assertEquals(updatedRecipeNew.getIngredients().value().size(), 2);
+        assertEquals(updatedRecipeNew.getIngredients().value().get(0).getName(), "Ingredient 1");
+        assertEquals(updatedRecipeNew.getIngredients().value().get(1).getName(), "Ingredient 3");
 
-        updatedRecipeNew.setIngredients(List.of(ingredientNew));
+        updatedRecipeNew.setIngredients(new Recipe.Ingredients(List.of(ingredientNew)));
         Recipe updatedRecipeNew2 = recipeRepositoryAdapter.update(updatedRecipeNew);
-        assertEquals(updatedRecipeNew2.getIngredients().size(), 1);
-        assertEquals(updatedRecipeNew2.getIngredients().get(0).getName(), "Ingredient 3");
+        assertEquals(updatedRecipeNew2.getIngredients().value().size(), 1);
+        assertEquals(updatedRecipeNew2.getIngredients().value().getFirst().getName(), "Ingredient 3");
     }
 
 }

@@ -8,11 +8,11 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 
 @ApplicationScoped
-public class ReportService implements RecipeServicePort {
+public class RecipeService implements RecipeServicePort {
     @Inject
     RecipeRepositoryPort recipeRepository;
 
-    public Recipe getRecipeById(String id) {
+    public Recipe getRecipeById(Recipe.Id id) {
         return recipeRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Recipe with ID " + id + " not found."));
     }
@@ -29,12 +29,12 @@ public class ReportService implements RecipeServicePort {
     }
 
     @Override
-    public void deleteRecipeById(String id) {
+    public void deleteRecipeById(Recipe.Id id) {
         Recipe recipe = getRecipeById(id);
         recipeRepository.delete(recipe);
     }
 
-    private void checkIfRecipeExists(String id) {
+    private void checkIfRecipeExists(Recipe.Id id) {
         recipeRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Recipe with ID " + id + " not found."));
     }
 }

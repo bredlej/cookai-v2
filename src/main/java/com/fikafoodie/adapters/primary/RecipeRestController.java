@@ -22,7 +22,7 @@ public class RecipeRestController {
     @Produces(MediaType.APPLICATION_JSON)
     public Response getRecipeById(@PathParam("id") String id) {
         try {
-            Recipe recipe = recipeService.getRecipeById(id);
+            Recipe recipe = recipeService.getRecipeById(new Recipe.Id(id));
             return Response.ok(recipe).build();
         } catch (EntityNotFoundException e) {
             return Response.status(Response.Status.NOT_FOUND).entity("Recipe not found").build();
@@ -34,7 +34,7 @@ public class RecipeRestController {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response addRecipe(@PathParam("id") String id, Recipe recipe) {
-        recipe.setId(id);
+        recipe.setId(new Recipe.Id(id));
         Recipe savedRecipe = recipeService.addRecipe(recipe);
         return Response.created(URI.create("/recipes/" + recipe.getId())).entity(savedRecipe).build();
     }
@@ -44,7 +44,7 @@ public class RecipeRestController {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response updateRecipe(@PathParam("id") String id, Recipe recipe) {
-        recipe.setId(id);
+        recipe.setId(new Recipe.Id(id));
         try {
             Recipe updatedRecipe = recipeService.updateRecipe(recipe);
             return Response.ok(updatedRecipe).build();
@@ -57,7 +57,7 @@ public class RecipeRestController {
     @Path("/{id}")
     public Response deleteRecipeById(@PathParam("id") String id) {
         try {
-            recipeService.deleteRecipeById(id);
+            recipeService.deleteRecipeById(new Recipe.Id(id));
             return Response.noContent().build();
         } catch (EntityNotFoundException e) {
             return Response.status(Response.Status.NOT_FOUND).entity("Recipe not found").build();

@@ -5,7 +5,7 @@ import com.fikafoodie.domain.entities.Recipe;
 import java.util.Optional;
 
 public interface RecipeRepositoryPort {
-    Optional<Recipe> findById(String id);
+    Optional<Recipe> findById(Recipe.Id id);
 
     Recipe save(Recipe recipe);
 

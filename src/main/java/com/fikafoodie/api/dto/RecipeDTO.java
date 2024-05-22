@@ -17,13 +17,13 @@ public class RecipeDTO {
 
     public static RecipeDTO fromDomain(Recipe recipe) {
         RecipeDTO recipeDTO = new RecipeDTO();
-        recipeDTO.setId(recipe.getId());
-        recipeDTO.setName(recipe.getName());
-        recipeDTO.setIngredients(IngredientDTO.fromDomain(recipe.getIngredients()));
-        recipeDTO.setInstructions(recipe.getInstructions());
-        recipeDTO.setTags(recipe.getTags());
-        recipeDTO.setPhoto(recipe.getPhoto());
-        recipeDTO.setNotes(recipe.getNotes());
+        recipeDTO.setId(recipe.getId().value());
+        recipeDTO.setName(recipe.getName().value());
+        recipeDTO.setIngredients(IngredientDTO.fromDomain(recipe.getIngredients().value()));
+        recipeDTO.setInstructions(recipe.getInstructions().value());
+        recipeDTO.setTags(recipe.getTags().value());
+        recipeDTO.setPhoto(recipe.getPicture().value());
+        recipeDTO.setNotes(recipe.getNotes().value());
         return recipeDTO;
     }
 }
