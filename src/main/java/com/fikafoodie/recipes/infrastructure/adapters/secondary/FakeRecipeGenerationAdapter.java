@@ -1,12 +1,12 @@
 package com.fikafoodie.recipes.infrastructure.adapters.secondary;
 
 import com.fikafoodie.recipes.domain.entities.Recipe;
-import com.fikafoodie.recipes.domain.ports.secondary.AIServicePort;
+import com.fikafoodie.recipes.domain.ports.secondary.RecipeGenerationServicePort;
 import com.fikafoodie.recipes.domain.valueobjects.Ingredient;
 
 import java.util.List;
 
-public class FakeAIModelAdapter implements AIServicePort {
+public class FakeRecipeGenerationAdapter implements RecipeGenerationServicePort {
     @Override
     public List<Recipe> generateRecipesWithIngredients(List<String> ingredients) {
         Recipe recipe = new Recipe();

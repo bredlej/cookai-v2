@@ -8,8 +8,8 @@ import java.util.List;
 
 @Data
 public class RecipeCollection {
-    private Id id;
-    private UserAccount.Id ownerId;
+    private Id id = new Id("0");
+    private UserAccount.Id ownerId = new UserAccount.Id("0");
     private Recipes recipes = new Recipes(new ArrayList<>());
 
     public void addRecipe(Recipe recipe) {

@@ -5,7 +5,7 @@ import com.fikafoodie.recipes.application.services.RecipeCollectionService;
 import com.fikafoodie.recipes.domain.entities.Recipe;
 import com.fikafoodie.recipes.domain.entities.RecipeCollection;
 import com.fikafoodie.recipes.domain.ports.secondary.RecipeConfigurationPort;
-import com.fikafoodie.recipes.infrastructure.adapters.secondary.FakeAIModelAdapter;
+import com.fikafoodie.recipes.infrastructure.adapters.secondary.FakeRecipeGenerationAdapter;
 import com.fikafoodie.recipes.infrastructure.adapters.secondary.InMemoryRecipeCollectionRepository;
 import com.fikafoodie.useraccount.domain.entities.UserAccount;
 import com.fikafoodie.useraccount.infrastructure.adapters.primary.InMemoryUserAccountController;
@@ -27,7 +27,7 @@ public class RecipeCollectionServiceTest {
         InMemoryUserAccountController userAccountController = new InMemoryUserAccountController(new UserAccount.Credits(1));
 
         RecipeCollectionService recipeCollectionService = new RecipeCollectionService(
-                new FakeAIModelAdapter(),
+                new FakeRecipeGenerationAdapter(),
                 new InMemoryRecipeCollectionRepository(),
                 userAccountController,
                 recipeConfiguration);
@@ -43,7 +43,7 @@ public class RecipeCollectionServiceTest {
         InMemoryUserAccountController userAccountController = new InMemoryUserAccountController(new UserAccount.Credits(1));
 
         RecipeCollectionService recipeCollectionService = new RecipeCollectionService(
-                new FakeAIModelAdapter(),
+                new FakeRecipeGenerationAdapter(),
                 new InMemoryRecipeCollectionRepository(),
                 userAccountController,
                 recipeConfiguration);
@@ -56,15 +56,17 @@ public class RecipeCollectionServiceTest {
     @Test()
     void shouldNotGenerateRecipesWithInsufficentCredits() {
         RecipeCollectionService recipeCollectionService = new RecipeCollectionService(
-                new FakeAIModelAdapter(),
+                new FakeRecipeGenerationAdapter(),
                 new InMemoryRecipeCollectionRepository(),
                 new InMemoryUserAccountController(new UserAccount.Credits(0)),
                 recipeConfiguration);
 
+        var amountOfRecipesBefore = recipeCollectionService.getRecipeCollectionOfUser().getRecipes().value().size();
         try {
             recipeCollectionService.generateRecipesWithIngredients(List.of("ingredient1", "ingredient2"));
         } catch (InsufficentCreditsException e) {
-            assertTrue(true);
+            var amountOfRecipesAfter = recipeCollectionService.getRecipeCollectionOfUser().getRecipes().value().size();
+            Assertions.assertEquals(amountOfRecipesBefore, amountOfRecipesAfter);
             return;
         }
         Assertions.fail();

@@ -1,8 +1,12 @@
 package com.fikafoodie.recipes.domain.valueobjects;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class Ingredient {
     private Name name = new Name("");
     private Quantity quantity = new Quantity(0);

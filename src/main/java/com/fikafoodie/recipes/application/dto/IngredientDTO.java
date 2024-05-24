@@ -26,4 +26,17 @@ public class IngredientDTO {
         ingredientDTO.setType(ingredient.getType().value());
         return ingredientDTO;
     }
+
+    public Ingredient toDomain() {
+        return new Ingredient(
+                new Ingredient.Name(name),
+                new Ingredient.Quantity(quantity),
+                new Ingredient.Unit(unit),
+                optional,
+                new Ingredient.Type(type)
+        );
+    }
+    public static List<Ingredient> toDomain(List<IngredientDTO> ingredientDTOs) {
+        return ingredientDTOs.stream().map(IngredientDTO::toDomain).toList();
+    }
 }

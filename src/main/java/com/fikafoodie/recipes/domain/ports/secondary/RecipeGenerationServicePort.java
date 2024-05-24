@@ -4,6 +4,6 @@ import com.fikafoodie.recipes.domain.entities.Recipe;
 
 import java.util.List;
 
-public interface AIServicePort {
+public interface RecipeGenerationServicePort {
     List<Recipe> generateRecipesWithIngredients(List<String> ingredients);
 }

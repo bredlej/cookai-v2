@@ -1,0 +1,224 @@
+{
+  "recipes" : [
+    {
+      "id": "1",
+      "name": "Pasta with tomato sauce",
+      "summary": "A simple pasta recipe",
+      "ingredients": [
+        {"name": "Pasta", "quantity": 200, "unit": "g", "optional": false, "type": "pasta"},
+        {"name": "Tomato sauce", "quantity": 200, "unit": "g", "optional": false, "type": "sauce"},
+        {"name": "Salt", "quantity": 1, "unit": "pinch", "optional": true, "type": "seasoning"}
+      ],
+      "instructions": [
+        "Boil the pasta",
+        "Add the tomato sauce",
+        "Add salt to taste"
+      ],
+      "tags": ["pasta", "italian"],
+      "photo": "/img/tomato_pasta.webp",
+      "notes": ""
+    },
+    {
+      "id": "2",
+      "name": "Rice with mushroom sauce",
+      "summary": "A simple rice recipe",
+      "ingredients": [
+        {"name": "Rice", "quantity": 200, "unit": "g", "optional": false, "type": "Rice"},
+        {"name": "Mushroom sauce", "quantity": 200, "unit": "g", "optional": false, "type": "sauce"},
+        {"name": "Salt", "quantity": 1, "unit": "pinch", "optional": true, "type": "seasoning"}
+      ],
+      "instructions": [
+        "Boil the rice",
+        "Add the mushroom sauce",
+        "Add salt to taste"
+      ],
+      "tags": ["Rice", "italian"],
+      "photo": "/img/rice_mushrooms.webp",
+      "notes": ""
+    },
+    {
+      "id": "3",
+      "name": "Chicken Curry",
+      "summary": "A hearty chicken curry with coconut milk",
+      "ingredients": [
+        {"name": "Chicken breast", "quantity": 500, "unit": "g", "optional": false, "type": "meat"},
+        {"name": "Coconut milk", "quantity": 400, "unit": "ml", "optional": false, "type": "liquid"},
+        {"name": "Curry powder", "quantity": 2, "unit": "tbsp", "optional": false, "type": "seasoning"},
+        {"name": "Onion", "quantity": 1, "unit": "large", "optional": false, "type": "vegetable"},
+        {"name": "Garlic", "quantity": 2, "unit": "cloves", "optional": false, "type": "vegetable"},
+        {"name": "Oil", "quantity": 2, "unit": "tbsp", "optional": false, "type": "fat"},
+        {"name": "Salt", "quantity": 1, "unit": "pinch", "optional": true, "type": "seasoning"}
+      ],
+      "instructions": [
+        "Dice the onion and garlic, and sauté in oil until translucent.",
+        "Add the curry powder and stir for about 1 minute.",
+        "Add the chicken breast pieces and fry until they are golden on all sides.",
+        "Pour in the coconut milk and simmer for 20 minutes.",
+        "Add salt to taste."
+      ],
+      "tags": ["curry", "chicken", "indian"],
+      "photo": "/img/chicken_curry.webp",
+      "notes": "Serve with rice or naan bread for a complete meal."
+    },
+    {
+      "id": "4",
+      "name": "Beef Stir-Fry",
+      "summary": "Quick and easy beef stir-fry with vegetables",
+      "ingredients": [
+        {"name": "Beef", "quantity": 300, "unit": "g", "optional": false, "type": "meat"},
+        {"name": "Bell peppers", "quantity": 2, "unit": "medium", "optional": false, "type": "vegetable"},
+        {"name": "Soy sauce", "quantity": 3, "unit": "tbsp", "optional": false, "type": "sauce"},
+        {"name": "Ginger", "quantity": 1, "unit": "tbsp", "optional": false, "type": "seasoning"},
+        {"name": "Vegetable oil", "quantity": 2, "unit": "tbsp", "optional": false, "type": "fat"},
+        {"name": "Salt", "quantity": 1, "unit": "pinch", "optional": true, "type": "seasoning"}
+      ],
+      "instructions": [
+        "Slice the beef into thin strips.",
+        "Cut the bell peppers into bite-sized pieces.",
+        "Heat the oil in a pan and fry the beef until browned.",
+        "Add the ginger and bell peppers, and stir-fry for 5 minutes.",
+        "Pour in the soy sauce and stir well.",
+        "Add salt to taste."
+      ],
+      "tags": ["beef", "stir-fry", "chinese"],
+      "photo": "/img/beef_stir_fry.webp",
+      "notes": "You can add other vegetables like broccoli or carrots."
+    },
+    {
+      "id": "5",
+      "name": "Vegetable Lasagna",
+      "summary": "A cheesy, vegetarian lasagna loaded with vegetables",
+      "ingredients": [
+        {"name": "Lasagna noodles", "quantity": 12, "unit": "sheets", "optional": false, "type": "pasta"},
+        {"name": "Ricotta cheese", "quantity": 250, "unit": "g", "optional": false, "type": "dairy"},
+        {"name": "Spinach", "quantity": 200, "unit": "g", "optional": false, "type": "vegetable"},
+        {"name": "Mushrooms", "quantity": 150, "unit": "g", "optional": false, "type": "vegetable"},
+        {"name": "Tomato sauce", "quantity": 500, "unit": "ml", "optional": false, "type": "sauce"},
+        {"name": "Mozzarella cheese", "quantity": 200, "unit": "g", "optional": false, "type": "dairy"},
+        {"name": "Salt", "quantity": 1, "unit": "pinch", "optional": true, "type": "seasoning"},
+        {"name": "Pepper", "quantity": 1, "unit": "pinch", "optional": true, "type": "seasoning"}
+      ],
+      "instructions": [
+        "Precook lasagna noodles according to package instructions.",
+        "Sauté spinach and mushrooms until cooked.",
+        "Layer noodles, ricotta, vegetables, tomato sauce, and mozzarella in a baking dish.",
+        "Repeat the layering process until all ingredients are used.",
+        "Bake at 180°C for 25 minutes.",
+        "Season with salt and pepper to taste."
+      ],
+      "tags": ["vegetarian", "italian", "lasagna"],
+      "photo": "/img/vegetable_lasagna.webp",
+      "notes": "Allow to cool for 10 minutes before serving to help it set."
+    },
+    {
+      "id": "6",
+      "name": "Salmon Teriyaki",
+      "summary": "Delicious and easy to make salmon with teriyaki sauce",
+      "ingredients": [
+        {"name": "Salmon fillet", "quantity": 400, "unit": "g", "optional": false, "type": "fish"},
+        {"name": "Teriyaki sauce", "quantity": 100, "unit": "ml", "optional": false, "type": "sauce"},
+        {"name": "Sesame seeds", "quantity": 1, "unit": "tbsp", "optional": true, "type": "seasoning"},
+        {"name": "Oil", "quantity": 1, "unit": "tbsp", "optional": false, "type": "fat"}
+      ],
+      "instructions": [
+        "Marinate the salmon in teriyaki sauce for at least 30 minutes.",
+        "Heat oil in a pan over medium heat.",
+        "Cook salmon on each side for about 4 minutes.",
+        "Sprinkle with sesame seeds before serving."
+      ],
+      "tags": ["fish", "japanese", "easy"],
+      "photo": "/img/salmon_teriyaki.webp",
+      "notes": "Serve with steamed rice and vegetables for a complete meal."
+    },
+    {
+      "id": "7",
+      "name": "Avocado Toast",
+      "summary": "A healthy and trendy breakfast or snack option",
+      "ingredients": [
+        {"name": "Whole grain bread", "quantity": 2, "unit": "slices", "optional": false, "type": "grain"},
+        {"name": "Ripe avocado", "quantity": 1, "unit": "whole", "optional": false, "type": "fruit"},
+        {"name": "Lemon juice", "quantity": 1, "unit": "tsp", "optional": true, "type": "seasoning"},
+        {"name": "Salt", "quantity": 1, "unit": "pinch", "optional": true, "type": "seasoning"},
+        {"name": "Pepper", "quantity": 1, "unit": "pinch", "optional": true, "type": "seasoning"}
+      ],
+      "instructions": [
+        "Toast the bread slices to your preferred doneness.",
+        "Mash the avocado with lemon juice, salt, and pepper.",
+        "Spread the mashed avocado evenly on the toasted bread."
+      ],
+      "tags": ["vegetarian", "breakfast", "quick"],
+      "photo": "/img/avocado_toast.webp",
+      "notes": "Top with radishes, tomatoes, or sprouts for added flavor and texture."
+    },
+    {
+      "id": "8",
+      "name": "Sweet Potato Soup",
+      "summary": "A creamy and comforting sweet potato soup",
+      "ingredients": [
+        {"name": "Sweet potatoes", "quantity": 600, "unit": "g", "optional": false, "type": "vegetable"},
+        {"name": "Vegetable broth", "quantity": 800, "unit": "ml", "optional": false, "type": "liquid"},
+        {"name": "Onion", "quantity": 1, "unit": "medium", "optional": false, "type": "vegetable"},
+        {"name": "Garlic", "quantity": 3, "unit": "cloves", "optional": false, "type": "vegetable"},
+        {"name": "Cream", "quantity": 100, "unit": "ml", "optional": true, "type": "dairy"},
+        {"name": "Salt", "quantity": 1, "unit": "tsp", "optional": true, "type": "seasoning"},
+        {"name": "Pepper", "quantity": 1, "unit": "tsp", "optional": true, "type": "seasoning"}
+      ],
+      "instructions": [
+        "Peel and chop the sweet potatoes and onion.",
+        "Sauté onion and garlic in a large pot until translucent.",
+        "Add sweet potatoes and vegetable broth, bring to a boil, then simmer until potatoes are soft.",
+        "Puree the mixture in a blender or use an immersion blender until smooth.",
+        "Stir in cream, and season with salt and pepper to taste."
+      ],
+      "tags": ["vegetarian", "soup", "comfort food"],
+      "photo": "/img/potato_soup.webp",
+      "notes": "Garnish with fresh herbs or a dollop of sour cream before serving."
+    },
+    {
+      "id": "9",
+      "name": "Quinoa Salad",
+      "summary": "A light and refreshing salad with quinoa and mixed vegetables",
+      "ingredients": [
+        {"name": "Quinoa", "quantity": 200, "unit": "g", "optional": false, "type": "grain"},
+        {"name": "Cucumber", "quantity": 1, "unit": "medium", "optional": false, "type": "vegetable"},
+        {"name": "Cherry tomatoes", "quantity": 150, "unit": "g", "optional": false, "type": "vegetable"},
+        {"name": "Feta cheese", "quantity": 100, "unit": "g", "optional": false, "type": "dairy"},
+        {"name": "Olive oil", "quantity": 2, "unit": "tbsp", "optional": false, "type": "fat"},
+        {"name": "Lemon juice", "quantity": 1, "unit": "tbsp", "optional": true, "type": "seasoning"}
+      ],
+      "instructions": [
+        "Cook quinoa according to package instructions and let cool.",
+        "Chop cucumber and halve cherry tomatoes.",
+        "Combine quinoa, cucumber, tomatoes, and crumbled feta cheese in a large bowl.",
+        "Dress with olive oil and lemon juice, and toss to combine."
+      ],
+      "tags": ["salad", "healthy", "quick"],
+      "photo": "/img/quinoa_salad.webp",
+      "notes": "Add fresh herbs like parsley or mint to enhance the flavor."
+    },
+    {
+      "id": "10",
+      "name": "Baked Cod with Lemon Butter",
+      "summary": "Tender cod fillets baked with a rich lemon butter sauce",
+      "ingredients": [
+        {"name": "Cod fillets", "quantity": 4, "unit": "pieces", "optional": false, "type": "fish"},
+        {"name": "Butter", "quantity": 50, "unit": "g", "optional": false, "type": "dairy"},
+        {"name": "Lemon juice", "quantity": 2, "unit": "tbsp", "optional": false, "type": "seasoning"},
+        {"name": "Garlic", "quantity": 2, "unit": "cloves", "optional": false, "type": "vegetable"},
+        {"name": "Parsley", "quantity": 1, "unit": "tbsp", "optional": true, "type": "herb"},
+        {"name": "Salt", "quantity": 1, "unit": "tsp", "optional": true, "type": "seasoning"},
+        {"name": "Pepper", "quantity": 1, "unit": "tsp", "optional": true, "type": "seasoning"}
+      ],
+      "instructions": [
+        "Preheat oven to 200°C.",
+        "Melt butter in a saucepan, add minced garlic, lemon juice, salt, and pepper.",
+        "Place cod fillets in a baking dish, and pour the lemon butter sauce over them.",
+        "Bake for 12-15 minutes or until the fish flakes easily with a fork.",
+        "Garnish with chopped parsley before serving."
+      ],
+      "tags": ["fish", "baked", "easy"],
+      "photo": "/img/baked_cod.webp",
+      "notes": "Serve with steamed vegetables or a side salad for a complete meal."
+    }
+  ]
+}

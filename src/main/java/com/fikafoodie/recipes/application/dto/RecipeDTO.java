@@ -9,6 +9,7 @@ import java.util.List;
 public class RecipeDTO {
     private String id;
     private String name;
+    private String summary;
     private List<IngredientDTO> ingredients;
     private List<String> instructions;
     private List<String> tags;
@@ -25,5 +26,18 @@ public class RecipeDTO {
         recipeDTO.setPhoto(recipe.getPicture().value());
         recipeDTO.setNotes(recipe.getNotes().value());
         return recipeDTO;
+    }
+
+    public static Recipe toDomain(RecipeDTO recipeDTO) {
+        Recipe recipe = new Recipe();
+        recipe.setId(new Recipe.Id(recipeDTO.getId()));
+        recipe.setName(new Recipe.Name(recipeDTO.getName()));
+
+        recipe.setIngredients(new Recipe.Ingredients(IngredientDTO.toDomain(recipeDTO.getIngredients())));
+        recipe.setInstructions(new Recipe.Instructions(recipeDTO.getInstructions()));
+        recipe.setTags(new Recipe.Tags(recipeDTO.getTags()));
+        recipe.setPicture(new Recipe.Picture(recipeDTO.getPhoto()));
+        recipe.setNotes(new Recipe.Notes(recipeDTO.getNotes()));
+        return recipe;
     }
 }

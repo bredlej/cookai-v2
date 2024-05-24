@@ -1,6 +1,7 @@
 package com.fikafoodie.recipes.domain.entities;
 
 import com.fikafoodie.recipes.domain.valueobjects.Ingredient;
+import io.vertx.core.cli.annotations.Summary;
 import lombok.Data;
 
 import java.util.ArrayList;
@@ -10,6 +11,7 @@ import java.util.List;
 public class Recipe {
     private Id id = new Id("");
     private Name name = new Name("");
+    private Summary summary = new Summary("");
     private Ingredients ingredients = new Ingredients(new ArrayList<>());
     private Instructions instructions = new Instructions(new ArrayList<>());
     private Tags tags = new Tags(new ArrayList<>());
@@ -28,6 +30,14 @@ public class Recipe {
         public Name {
             if (value == null) {
                 throw new IllegalArgumentException("Name cannot be null");
+            }
+        }
+    }
+
+    public record Summary(String value) {
+        public Summary {
+            if (value == null) {
+                throw new IllegalArgumentException("Summary cannot be null");
             }
         }
     }
