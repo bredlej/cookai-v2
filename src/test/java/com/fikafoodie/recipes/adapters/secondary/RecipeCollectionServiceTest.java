@@ -1,9 +1,9 @@
 package com.fikafoodie.recipes.adapters.secondary;
 
-import com.fikafoodie.recipes.application.exceptions.InsufficentCreditsException;
+import com.fikafoodie.recipes.application.exceptions.InsufficientCreditsException;
 import com.fikafoodie.recipes.application.services.RecipeCollectionService;
 import com.fikafoodie.recipes.domain.entities.Recipe;
-import com.fikafoodie.recipes.domain.entities.RecipeCollection;
+import com.fikafoodie.recipes.domain.aggregates.RecipeCollection;
 import com.fikafoodie.recipes.domain.ports.secondary.RecipeConfigurationPort;
 import com.fikafoodie.recipes.infrastructure.adapters.secondary.FakeRecipeGenerationAdapter;
 import com.fikafoodie.recipes.infrastructure.adapters.secondary.InMemoryRecipeCollectionRepository;
@@ -23,7 +23,7 @@ public class RecipeCollectionServiceTest {
     RecipeConfigurationPort recipeConfiguration = () -> new UserAccount.Credits(1);
 
     @Test
-    void generatedRecipesShouldBeAddedToCollection() throws InsufficentCreditsException {
+    void generatedRecipesShouldBeAddedToCollection() throws InsufficientCreditsException {
         InMemoryUserAccountController userAccountController = new InMemoryUserAccountController(new UserAccount.Credits(1));
 
         RecipeCollectionService recipeCollectionService = new RecipeCollectionService(
@@ -39,7 +39,7 @@ public class RecipeCollectionServiceTest {
     }
 
     @Test
-    void generatedRecipesShouldBePaidFor() throws InsufficentCreditsException {
+    void generatedRecipesShouldBePaidFor() throws InsufficientCreditsException {
         InMemoryUserAccountController userAccountController = new InMemoryUserAccountController(new UserAccount.Credits(1));
 
         RecipeCollectionService recipeCollectionService = new RecipeCollectionService(
@@ -53,8 +53,8 @@ public class RecipeCollectionServiceTest {
         Assertions.assertEquals(new UserAccount.Credits(0), userAccountController.getCreditBalance());
     }
 
-    @Test()
-    void shouldNotGenerateRecipesWithInsufficentCredits() {
+    @Test
+    void shouldNotGenerateRecipesWithInsufficientCredits() {
         RecipeCollectionService recipeCollectionService = new RecipeCollectionService(
                 new FakeRecipeGenerationAdapter(),
                 new InMemoryRecipeCollectionRepository(),
@@ -64,7 +64,7 @@ public class RecipeCollectionServiceTest {
         var amountOfRecipesBefore = recipeCollectionService.getRecipeCollectionOfUser().getRecipes().value().size();
         try {
             recipeCollectionService.generateRecipesWithIngredients(List.of("ingredient1", "ingredient2"));
-        } catch (InsufficentCreditsException e) {
+        } catch (InsufficientCreditsException e) {
             var amountOfRecipesAfter = recipeCollectionService.getRecipeCollectionOfUser().getRecipes().value().size();
             Assertions.assertEquals(amountOfRecipesBefore, amountOfRecipesAfter);
             return;

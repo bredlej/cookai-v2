@@ -1,7 +1,6 @@
 package com.fikafoodie.recipes.domain.entities;
 
 import com.fikafoodie.recipes.domain.valueobjects.Ingredient;
-import io.vertx.core.cli.annotations.Summary;
 import lombok.Data;
 
 import java.util.ArrayList;

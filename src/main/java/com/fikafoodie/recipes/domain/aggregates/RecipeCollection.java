@@ -1,5 +1,6 @@
-package com.fikafoodie.recipes.domain.entities;
+package com.fikafoodie.recipes.domain.aggregates;
 
+import com.fikafoodie.recipes.domain.entities.Recipe;
 import com.fikafoodie.useraccount.domain.entities.UserAccount;
 import lombok.Data;
 

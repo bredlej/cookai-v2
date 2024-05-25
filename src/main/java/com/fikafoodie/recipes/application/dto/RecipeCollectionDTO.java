@@ -1,6 +1,6 @@
 package com.fikafoodie.recipes.application.dto;
 
-import com.fikafoodie.recipes.domain.entities.RecipeCollection;
+import com.fikafoodie.recipes.domain.aggregates.RecipeCollection;
 import lombok.Data;
 
 import java.util.List;

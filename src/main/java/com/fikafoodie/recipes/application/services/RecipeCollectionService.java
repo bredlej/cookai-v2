@@ -1,8 +1,8 @@
 package com.fikafoodie.recipes.application.services;
 
-import com.fikafoodie.recipes.application.exceptions.InsufficentCreditsException;
+import com.fikafoodie.recipes.application.exceptions.InsufficientCreditsException;
 import com.fikafoodie.recipes.domain.entities.Recipe;
-import com.fikafoodie.recipes.domain.entities.RecipeCollection;
+import com.fikafoodie.recipes.domain.aggregates.RecipeCollection;
 import com.fikafoodie.recipes.domain.ports.secondary.RecipeGenerationServicePort;
 import com.fikafoodie.recipes.domain.ports.secondary.RecipeCollectionRepositoryPort;
 import com.fikafoodie.recipes.domain.ports.primary.RecipeCollectionServicePort;
@@ -17,7 +17,7 @@ import java.util.List;
  * It interacts with several other services and repositories to generate recipes,
  * add them to the user's collection, and manage the user's credits.
  */
-public class RecipeCollectionService implements RecipeCollectionServicePort {
+public class RecipeCollectionService {
 
     private final RecipeGenerationServicePort recipeGenerationServicePort;
     private final RecipeCollectionRepositoryPort recipeCollectionRepositoryPort;
@@ -43,13 +43,12 @@ public class RecipeCollectionService implements RecipeCollectionServicePort {
      * The user's credits are checked before generating recipes and are deducted after successful generation.
      * @param ingredients The list of ingredients to generate recipes from.
      * @return The list of generated recipes.
-     * @throws InsufficentCreditsException If the user does not have enough credits to generate recipes.
+     * @throws InsufficientCreditsException If the user does not have enough credits to generate recipes.
      */
-    @Override
-    public List<Recipe> generateRecipesWithIngredients(List<String> ingredients) throws InsufficentCreditsException {
+    public List<Recipe> generateRecipesWithIngredients(List<String> ingredients) throws InsufficientCreditsException {
         UserAccount.Credits recipeCost = recipeConfigurationPort.getRecipeCreationCost();
         if (userAccountServicePort.getCreditBalance().compareTo(recipeCost) < 0){
-            throw new InsufficentCreditsException("Insufficient credits to generate recipes");
+            throw new InsufficientCreditsException("Insufficient credits to generate recipes");
         }
         List<Recipe> generatedRecipes = recipeGenerationServicePort.generateRecipesWithIngredients(ingredients);
         RecipeCollection recipeCollection = recipeCollectionRepositoryPort.getRecipeCollectionOfUser();
@@ -62,8 +61,12 @@ public class RecipeCollectionService implements RecipeCollectionServicePort {
      * Retrieves the user's current recipe collection.
      * @return The user's recipe collection.
      */
-    @Override
     public RecipeCollection getRecipeCollectionOfUser() {
         return recipeCollectionRepositoryPort.getRecipeCollectionOfUser();
+    }
+
+    public void addRecipeToCollection(Recipe recipe) {
+        RecipeCollection recipeCollection = recipeCollectionRepositoryPort.getRecipeCollectionOfUser();
+        recipeCollection.addRecipe(recipe);
     }
 }
