@@ -1,17 +1,21 @@
-package com.fikafoodie.recipes.infrastructure.adapters.secondary;
+package com.fikafoodie.recipes.infrastructure.adapters.secondary.fake;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fikafoodie.kernel.qualifiers.InMemory;
 import com.fikafoodie.recipes.application.dto.RecipeCollectionDTO;
 import com.fikafoodie.recipes.application.dto.RecipeDTO;
 import com.fikafoodie.recipes.domain.aggregates.RecipeCollection;
 import com.fikafoodie.recipes.domain.ports.secondary.RecipeCollectionRepositoryPort;
 import io.vertx.core.impl.logging.Logger;
 import io.vertx.core.impl.logging.LoggerFactory;
+import jakarta.enterprise.context.ApplicationScoped;
 
 import java.io.IOException;
 import java.io.InputStream;
 
+@InMemory
+@ApplicationScoped
 public class InMemoryRecipeCollectionRepository implements RecipeCollectionRepositoryPort {
     RecipeCollection recipeCollection = new RecipeCollection();
 

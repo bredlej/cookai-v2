@@ -1,14 +1,17 @@
-package com.fikafoodie.recipes.adapters.secondary;
+package com.fikafoodie.recipes.application.services;
 
 import com.fikafoodie.recipes.application.exceptions.InsufficientCreditsException;
-import com.fikafoodie.recipes.application.services.RecipeCollectionService;
 import com.fikafoodie.recipes.domain.entities.Recipe;
 import com.fikafoodie.recipes.domain.aggregates.RecipeCollection;
 import com.fikafoodie.recipes.domain.ports.secondary.RecipeConfigurationPort;
-import com.fikafoodie.recipes.infrastructure.adapters.secondary.FakeRecipeGenerationAdapter;
-import com.fikafoodie.recipes.infrastructure.adapters.secondary.InMemoryRecipeCollectionRepository;
+import com.fikafoodie.recipes.infrastructure.adapters.secondary.fake.InMemoryRecipeGenerationAdapter;
+import com.fikafoodie.recipes.infrastructure.adapters.secondary.fake.InMemoryRecipeCollectionRepository;
 import com.fikafoodie.useraccount.domain.entities.UserAccount;
-import com.fikafoodie.useraccount.infrastructure.adapters.primary.InMemoryUserAccountController;
+import com.fikafoodie.useraccount.domain.ports.primary.UserAccountServicePort;
+import com.fikafoodie.useraccount.domain.valueobjects.Password;
+import com.fikafoodie.useraccount.infrastructure.adapters.primary.aws.UserAccountNotFoundException;
+import com.fikafoodie.useraccount.infrastructure.adapters.primary.fake.InMemoryUserAccountController;
+import com.fikafoodie.useraccount.infrastructure.adapters.secondary.fake.InMemoryUserAccountRepository;
 import io.quarkus.test.junit.QuarkusTest;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -23,11 +26,16 @@ public class RecipeCollectionServiceTest {
     RecipeConfigurationPort recipeConfiguration = () -> new UserAccount.Credits(1);
 
     @Test
-    void generatedRecipesShouldBeAddedToCollection() throws InsufficientCreditsException {
-        InMemoryUserAccountController userAccountController = new InMemoryUserAccountController(new UserAccount.Credits(1));
+    void generatedRecipesShouldBeAddedToCollection() throws InsufficientCreditsException, UserAccountNotFoundException {
+        InMemoryUserAccountController userAccountController = new InMemoryUserAccountController(
+                new InMemoryUserAccountRepository(),
+                () -> new UserAccount.Credits(1)
+        );
+        userAccountController.registerAccount(new UserAccount.Name("name"), new UserAccount.Email("email"), new Password("password"));
+        userAccountController.confirmAccount();
 
         RecipeCollectionService recipeCollectionService = new RecipeCollectionService(
-                new FakeRecipeGenerationAdapter(),
+                new InMemoryRecipeGenerationAdapter(),
                 new InMemoryRecipeCollectionRepository(),
                 userAccountController,
                 recipeConfiguration);
@@ -39,11 +47,16 @@ public class RecipeCollectionServiceTest {
     }
 
     @Test
-    void generatedRecipesShouldBePaidFor() throws InsufficientCreditsException {
-        InMemoryUserAccountController userAccountController = new InMemoryUserAccountController(new UserAccount.Credits(1));
+    void generatedRecipesShouldBePaidFor() throws InsufficientCreditsException, UserAccountNotFoundException {
+        UserAccountServicePort userAccountController = new InMemoryUserAccountController(
+                new InMemoryUserAccountRepository(),
+                () -> new UserAccount.Credits(1)
+        );
+        userAccountController.registerAccount(new UserAccount.Name("name"), new UserAccount.Email("email"), new Password("password"));
+        userAccountController.confirmAccount();
 
         RecipeCollectionService recipeCollectionService = new RecipeCollectionService(
-                new FakeRecipeGenerationAdapter(),
+                new InMemoryRecipeGenerationAdapter(),
                 new InMemoryRecipeCollectionRepository(),
                 userAccountController,
                 recipeConfiguration);
@@ -54,11 +67,18 @@ public class RecipeCollectionServiceTest {
     }
 
     @Test
-    void shouldNotGenerateRecipesWithInsufficientCredits() {
+    void shouldNotGenerateRecipesWithInsufficientCredits() throws UserAccountNotFoundException {
+        UserAccountServicePort userAccountServicePort = new InMemoryUserAccountController(
+                new InMemoryUserAccountRepository(),
+                () -> new UserAccount.Credits(0)
+        );
+        userAccountServicePort.registerAccount(new UserAccount.Name("name"), new UserAccount.Email("email"), new Password("password"));
+        userAccountServicePort.confirmAccount();
+
         RecipeCollectionService recipeCollectionService = new RecipeCollectionService(
-                new FakeRecipeGenerationAdapter(),
+                new InMemoryRecipeGenerationAdapter(),
                 new InMemoryRecipeCollectionRepository(),
-                new InMemoryUserAccountController(new UserAccount.Credits(0)),
+                userAccountServicePort,
                 recipeConfiguration);
 
         var amountOfRecipesBefore = recipeCollectionService.getRecipeCollectionOfUser().getRecipes().value().size();

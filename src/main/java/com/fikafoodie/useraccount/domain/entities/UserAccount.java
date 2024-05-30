@@ -1,12 +1,21 @@
 package com.fikafoodie.useraccount.domain.entities;
 
+import io.quarkus.runtime.annotations.RegisterForReflection;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
+@RegisterForReflection
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class UserAccount {
 
-    private Id id = new Id("1");
+    private Id id = new Id("");
+    private Name name = new Name("");
+    private Email email = new Email("");
     private Credits credits = new Credits(0);
+    private Status status = Status.NEW;
 
     public void addCredits(Credits credits) {
         this.credits = this.credits.add(credits);
@@ -24,6 +33,22 @@ public class UserAccount {
         public Id {
             if (value == null) {
                 throw new IllegalArgumentException("User account id cannot be null");
+            }
+        }
+    }
+
+    public record Name(String value) {
+        public Name {
+            if (value == null) {
+                throw new IllegalArgumentException("User account name cannot be null");
+            }
+        }
+    }
+
+    public record Email(String value) {
+        public Email {
+            if (value == null) {
+                throw new IllegalArgumentException("User account email cannot be null");
             }
         }
     }
@@ -57,5 +82,9 @@ public class UserAccount {
         public int compareTo(Credits other) {
             return Integer.compare(this.value, other.value);
         }
+    }
+
+    public enum Status {
+        NEW, ACTIVE, INACTIVE
     }
 }

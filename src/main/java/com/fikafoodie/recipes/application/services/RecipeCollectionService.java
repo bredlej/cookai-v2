@@ -5,10 +5,10 @@ import com.fikafoodie.recipes.domain.entities.Recipe;
 import com.fikafoodie.recipes.domain.aggregates.RecipeCollection;
 import com.fikafoodie.recipes.domain.ports.secondary.RecipeGenerationServicePort;
 import com.fikafoodie.recipes.domain.ports.secondary.RecipeCollectionRepositoryPort;
-import com.fikafoodie.recipes.domain.ports.primary.RecipeCollectionServicePort;
 import com.fikafoodie.recipes.domain.ports.secondary.RecipeConfigurationPort;
 import com.fikafoodie.useraccount.domain.entities.UserAccount;
 import com.fikafoodie.useraccount.domain.ports.primary.UserAccountServicePort;
+import com.fikafoodie.useraccount.infrastructure.adapters.primary.aws.UserAccountNotFoundException;
 
 import java.util.List;
 
@@ -45,7 +45,7 @@ public class RecipeCollectionService {
      * @return The list of generated recipes.
      * @throws InsufficientCreditsException If the user does not have enough credits to generate recipes.
      */
-    public List<Recipe> generateRecipesWithIngredients(List<String> ingredients) throws InsufficientCreditsException {
+    public List<Recipe> generateRecipesWithIngredients(List<String> ingredients) throws InsufficientCreditsException, UserAccountNotFoundException {
         UserAccount.Credits recipeCost = recipeConfigurationPort.getRecipeCreationCost();
         if (userAccountServicePort.getCreditBalance().compareTo(recipeCost) < 0){
             throw new InsufficientCreditsException("Insufficient credits to generate recipes");

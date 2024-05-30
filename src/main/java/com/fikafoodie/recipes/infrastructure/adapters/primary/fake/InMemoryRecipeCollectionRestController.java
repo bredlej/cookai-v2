@@ -1,5 +1,6 @@
-package com.fikafoodie.recipes.infrastructure.adapters.primary;
+package com.fikafoodie.recipes.infrastructure.adapters.primary.fake;
 
+import com.fikafoodie.kernel.qualifiers.InMemory;
 import com.fikafoodie.recipes.application.dto.RecipeCollectionDTO;
 import com.fikafoodie.recipes.application.dto.RecipeDTO;
 import com.fikafoodie.recipes.application.dto.RecipeGenerationIngredientsDTO;
@@ -9,33 +10,41 @@ import com.fikafoodie.recipes.domain.entities.Recipe;
 import com.fikafoodie.recipes.domain.aggregates.RecipeCollection;
 import com.fikafoodie.recipes.domain.ports.primary.RecipeCollectionServicePort;
 import com.fikafoodie.recipes.domain.ports.secondary.RecipeCollectionRepositoryPort;
-import com.fikafoodie.recipes.infrastructure.adapters.secondary.FakeRecipeGenerationAdapter;
-import com.fikafoodie.recipes.infrastructure.adapters.secondary.InMemoryRecipeCollectionRepository;
-import com.fikafoodie.useraccount.domain.entities.UserAccount;
-import com.fikafoodie.useraccount.infrastructure.adapters.primary.InMemoryUserAccountController;
+import com.fikafoodie.recipes.domain.ports.secondary.RecipeConfigurationPort;
+import com.fikafoodie.recipes.domain.ports.secondary.RecipeGenerationServicePort;
+import com.fikafoodie.useraccount.domain.ports.primary.UserAccountServicePort;
+import com.fikafoodie.useraccount.infrastructure.adapters.primary.aws.UserAccountNotFoundException;
+import io.quarkus.security.Authenticated;
 import jakarta.enterprise.context.RequestScoped;
+import jakarta.inject.Inject;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 
 import java.util.List;
 
+@InMemory
 @RequestScoped
 @Path("/v1/collections")
 public class InMemoryRecipeCollectionRestController implements RecipeCollectionServicePort {
 
     private final RecipeCollectionService recipeCollectionService;
 
-    public InMemoryRecipeCollectionRestController() {
+    @Inject
+    public InMemoryRecipeCollectionRestController(@InMemory RecipeGenerationServicePort recipeGenerationServicePort,
+                                                 @InMemory RecipeCollectionRepositoryPort recipeCollectionRepositoryPort,
+                                                 @InMemory UserAccountServicePort userAccountServicePort,
+                                                 @InMemory RecipeConfigurationPort recipeConfigurationPort) {
         recipeCollectionService = new RecipeCollectionService(
-                new FakeRecipeGenerationAdapter(),
-                new InMemoryRecipeCollectionRepository(),
-                new InMemoryUserAccountController(new UserAccount.Credits(1)),
-                () -> new UserAccount.Credits(1));
+                recipeGenerationServicePort,
+                recipeCollectionRepositoryPort,
+                userAccountServicePort,
+                recipeConfigurationPort);
     }
 
     @GET
     @Path("/list")
+    @Authenticated
     public RecipeCollectionDTO getRecipeCollection() {
         return RecipeCollectionDTO.fromDomain(getRecipeCollectionOfUser());
     }
@@ -48,11 +57,11 @@ public class InMemoryRecipeCollectionRestController implements RecipeCollectionS
 
     @POST
     @Path("/generate")
-    public List<RecipeDTO> generateRecipes(RecipeGenerationIngredientsDTO ingredients) throws InsufficientCreditsException {
+    public List<RecipeDTO> generateRecipes(RecipeGenerationIngredientsDTO ingredients) throws InsufficientCreditsException, UserAccountNotFoundException {
         return generateRecipesWithIngredients(ingredients.getIngredients()).stream().map(RecipeDTO::fromDomain).toList();
     }
 
-    public List<Recipe> generateRecipesWithIngredients(List<String> ingredients) throws InsufficientCreditsException {
+    public List<Recipe> generateRecipesWithIngredients(List<String> ingredients) throws InsufficientCreditsException, UserAccountNotFoundException {
         return recipeCollectionService.generateRecipesWithIngredients(ingredients);
     }
 
