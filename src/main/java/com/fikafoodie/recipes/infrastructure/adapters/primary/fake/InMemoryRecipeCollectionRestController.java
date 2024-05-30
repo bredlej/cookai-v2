@@ -12,7 +12,7 @@ import com.fikafoodie.recipes.domain.ports.primary.RecipeCollectionServicePort;
 import com.fikafoodie.recipes.domain.ports.secondary.RecipeCollectionRepositoryPort;
 import com.fikafoodie.recipes.domain.ports.secondary.RecipeConfigurationPort;
 import com.fikafoodie.recipes.domain.ports.secondary.RecipeGenerationServicePort;
-import com.fikafoodie.useraccount.domain.ports.primary.UserAccountServicePort;
+import com.fikafoodie.useraccount.domain.ports.primary.UserAccountSecuredServicePort;
 import com.fikafoodie.useraccount.infrastructure.adapters.primary.aws.UserAccountNotFoundException;
 import io.quarkus.security.Authenticated;
 import jakarta.enterprise.context.RequestScoped;
@@ -20,10 +20,10 @@ import jakarta.inject.Inject;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
+import jakarta.ws.rs.core.Response;
 
 import java.util.List;
 
-@InMemory
 @RequestScoped
 @Path("/v1/collections")
 public class InMemoryRecipeCollectionRestController implements RecipeCollectionServicePort {
@@ -32,21 +32,28 @@ public class InMemoryRecipeCollectionRestController implements RecipeCollectionS
 
     @Inject
     public InMemoryRecipeCollectionRestController(@InMemory RecipeGenerationServicePort recipeGenerationServicePort,
-                                                 @InMemory RecipeCollectionRepositoryPort recipeCollectionRepositoryPort,
-                                                 @InMemory UserAccountServicePort userAccountServicePort,
-                                                 @InMemory RecipeConfigurationPort recipeConfigurationPort) {
+                                                  @InMemory RecipeCollectionRepositoryPort recipeCollectionRepositoryPort,
+                                                  @InMemory UserAccountSecuredServicePort userAccountSecuredServicePort,
+                                                  @InMemory RecipeConfigurationPort recipeConfigurationPort) {
         recipeCollectionService = new RecipeCollectionService(
                 recipeGenerationServicePort,
                 recipeCollectionRepositoryPort,
-                userAccountServicePort,
+                userAccountSecuredServicePort,
                 recipeConfigurationPort);
     }
 
     @GET
     @Path("/list")
     @Authenticated
-    public RecipeCollectionDTO getRecipeCollection() {
-        return RecipeCollectionDTO.fromDomain(getRecipeCollectionOfUser());
+    public Response getRecipeCollection() {
+        RecipeCollectionDTO recipeCollectionDTO;
+        try {
+           recipeCollectionDTO = RecipeCollectionDTO.fromDomain(getRecipeCollectionOfUser());
+        }
+        catch (Exception e) {
+            return Response.status(Response.Status.FORBIDDEN).entity(e.getMessage()).build();
+        }
+        return Response.ok().entity(recipeCollectionDTO).build();
     }
 
     @POST
@@ -57,8 +64,15 @@ public class InMemoryRecipeCollectionRestController implements RecipeCollectionS
 
     @POST
     @Path("/generate")
-    public List<RecipeDTO> generateRecipes(RecipeGenerationIngredientsDTO ingredients) throws InsufficientCreditsException, UserAccountNotFoundException {
-        return generateRecipesWithIngredients(ingredients.getIngredients()).stream().map(RecipeDTO::fromDomain).toList();
+    public Response generateRecipes(RecipeGenerationIngredientsDTO ingredients) {
+        List<RecipeDTO> generatedRecipes;
+        try {
+            generatedRecipes = generateRecipesWithIngredients(ingredients.getIngredients()).stream().map(RecipeDTO::fromDomain).toList();
+        }
+        catch (InsufficientCreditsException | UserAccountNotFoundException e) {
+            return Response.status(Response.Status.FORBIDDEN).entity(e.getMessage()).build();
+        }
+        return Response.ok().entity(generatedRecipes).build();
     }
 
     public List<Recipe> generateRecipesWithIngredients(List<String> ingredients) throws InsufficientCreditsException, UserAccountNotFoundException {
@@ -75,3 +89,4 @@ public class InMemoryRecipeCollectionRestController implements RecipeCollectionS
         recipeCollectionService.addRecipeToCollection(recipe);
     }
 }
+

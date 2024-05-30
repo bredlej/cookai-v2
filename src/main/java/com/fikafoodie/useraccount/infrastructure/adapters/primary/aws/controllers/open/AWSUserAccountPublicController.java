@@ -1,20 +1,21 @@
-package com.fikafoodie.useraccount.infrastructure.adapters.primary.aws;
+package com.fikafoodie.useraccount.infrastructure.adapters.primary.aws.controllers.open;
 
 import com.fikafoodie.kernel.qualifiers.DynamoDB;
 import com.fikafoodie.useraccount.application.dto.AuthenticateDTO;
 import com.fikafoodie.useraccount.application.dto.ConfirmSignUpDTO;
 import com.fikafoodie.useraccount.application.dto.SignUpDTO;
-import com.fikafoodie.useraccount.application.services.UserAccountService;
+import com.fikafoodie.useraccount.application.services.UserAccountPublicService;
 import com.fikafoodie.useraccount.domain.entities.UserAccount;
 import com.fikafoodie.useraccount.domain.valueobjects.ConfirmationCode;
 import com.fikafoodie.useraccount.domain.valueobjects.Password;
-import com.fikafoodie.useraccount.domain.ports.primary.UserAccountServicePort;
-import com.fikafoodie.useraccount.domain.ports.secondary.UserAccountRepositoryPort;
-import com.fikafoodie.useraccount.infrastructure.adapters.primary.aws.api.UserAccountControllerCognitoAPI;
+import com.fikafoodie.useraccount.domain.ports.primary.UserAccountPublicServicePort;
+import com.fikafoodie.useraccount.domain.ports.secondary.UserAccountPublicRepositoryPort;
+import com.fikafoodie.useraccount.infrastructure.adapters.primary.aws.UserAccountNotFoundException;
+import com.fikafoodie.useraccount.infrastructure.adapters.primary.aws.api.UserAccountControllerPublicAPI;
 import com.fikafoodie.useraccount.infrastructure.adapters.primary.aws.dto.AuthenticateResponseDTO;
 import io.vertx.core.impl.logging.Logger;
 import io.vertx.core.impl.logging.LoggerFactory;
-import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.core.Response;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
@@ -22,13 +23,10 @@ import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.cognitoidentityprovider.CognitoIdentityProviderClient;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.*;
 
-@ApplicationScoped
-public class AWSUserAccountController implements UserAccountServicePort, UserAccountControllerCognitoAPI {
-    private final Logger logger = LoggerFactory.getLogger(AWSUserAccountController.class);
-
-    private final UserAccountRepositoryPort userAccountRepositoryPort;
-
-    private final UserAccountService userAccountService;
+@RequestScoped
+public class AWSUserAccountPublicController implements UserAccountPublicServicePort, UserAccountControllerPublicAPI {
+    private final Logger logger = LoggerFactory.getLogger(AWSUserAccountPublicController.class);
+    private final UserAccountPublicService userAccountPublicService;
 
     @ConfigProperty(name = "aws.cognito.clientId")
     String clientId;
@@ -38,9 +36,8 @@ public class AWSUserAccountController implements UserAccountServicePort, UserAcc
     String userPoolId;
 
     @Inject
-    public AWSUserAccountController(@DynamoDB UserAccountRepositoryPort userAccountRepositoryPort) {
-        this.userAccountRepositoryPort = userAccountRepositoryPort;
-        userAccountService = new UserAccountService(userAccountRepositoryPort, () -> new UserAccount.Credits(10));
+    public AWSUserAccountPublicController(@DynamoDB UserAccountPublicRepositoryPort userAccountPublicRepositoryPort) {
+        userAccountPublicService = new UserAccountPublicService(userAccountPublicRepositoryPort, () -> new UserAccount.Credits(10));
     }
 
     @Override
@@ -113,7 +110,9 @@ public class AWSUserAccountController implements UserAccountServicePort, UserAcc
             AdminAddUserToGroupResponse addUserToGroupResponse = cognitoIdentityProviderClient.adminAddUserToGroup(adminAddUserToGroupRequest);
             logger.info("Add user to group result: " + addUserToGroupResponse);
 
-            userAccountService.confirmAccount();
+            userAccountPublicService.confirmAccount(name);
+        } catch (UserAccountNotFoundException e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -133,32 +132,12 @@ public class AWSUserAccountController implements UserAccountServicePort, UserAcc
             SignUpResponse result = cognitoIdentityProviderClient.signUp(request);
             logger.info("Sign up result: " + result);
 
-            userAccountService.registerAccount(new UserAccount.Id(result.userSub()), name, email);
+            userAccountPublicService.registerAccount(new UserAccount.Id(result.userSub()), name, email);
         }
     }
 
     @Override
-    public void confirmAccount() {
-        throw new RuntimeException("Not implemented");
-    }
-
-    @Override
-    public UserAccount.Credits getCreditBalance() throws UserAccountNotFoundException {
-        if (userAccountRepositoryPort.getUserAccount().isEmpty()) {
-            throw new UserAccountNotFoundException("User account not found");
-        }
-        else {
-            return userAccountRepositoryPort.getUserAccount().get().creditBalance();
-        }
-    }
-
-    @Override
-    public void subtractCredits(UserAccount.Credits credits) throws UserAccountNotFoundException {
-        if (userAccountRepositoryPort.getUserAccount().isEmpty()) {
-            throw new UserAccountNotFoundException("User account not found");
-        }
-        else {
-            userAccountRepositoryPort.getUserAccount().get().subtractCredits(credits);
-        }
+    public void confirmAccount(UserAccount.Name name) throws UserAccountNotFoundException {
+        userAccountPublicService.confirmAccount(name);
     }
 }

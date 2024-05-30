@@ -7,7 +7,7 @@ import com.fikafoodie.recipes.domain.ports.secondary.RecipeGenerationServicePort
 import com.fikafoodie.recipes.domain.ports.secondary.RecipeCollectionRepositoryPort;
 import com.fikafoodie.recipes.domain.ports.secondary.RecipeConfigurationPort;
 import com.fikafoodie.useraccount.domain.entities.UserAccount;
-import com.fikafoodie.useraccount.domain.ports.primary.UserAccountServicePort;
+import com.fikafoodie.useraccount.domain.ports.primary.UserAccountSecuredServicePort;
 import com.fikafoodie.useraccount.infrastructure.adapters.primary.aws.UserAccountNotFoundException;
 
 import java.util.List;
@@ -21,20 +21,20 @@ public class RecipeCollectionService {
 
     private final RecipeGenerationServicePort recipeGenerationServicePort;
     private final RecipeCollectionRepositoryPort recipeCollectionRepositoryPort;
-    private final UserAccountServicePort userAccountServicePort;
+    private final UserAccountSecuredServicePort userAccountSecuredServicePort;
     private final RecipeConfigurationPort recipeConfigurationPort;
 
     /**
      * Constructor for the RecipeCollectionService class.
      * @param recipeGenerationServicePort The service used to generate recipes.
      * @param recipeCollectionRepositoryPort The repository for storing and retrieving recipe collections.
-     * @param userAccountServicePort The service for managing user accounts and credits.
+     * @param userAccountSecuredServicePort The service for managing user accounts and credits.
      * @param recipeConfigurationPort The service for retrieving recipe configuration details.
      */
-    public RecipeCollectionService(RecipeGenerationServicePort recipeGenerationServicePort, RecipeCollectionRepositoryPort recipeCollectionRepositoryPort, UserAccountServicePort userAccountServicePort, RecipeConfigurationPort recipeConfigurationPort) {
+    public RecipeCollectionService(RecipeGenerationServicePort recipeGenerationServicePort, RecipeCollectionRepositoryPort recipeCollectionRepositoryPort, UserAccountSecuredServicePort userAccountSecuredServicePort, RecipeConfigurationPort recipeConfigurationPort) {
         this.recipeGenerationServicePort = recipeGenerationServicePort;
         this.recipeCollectionRepositoryPort = recipeCollectionRepositoryPort;
-        this.userAccountServicePort = userAccountServicePort;
+        this.userAccountSecuredServicePort = userAccountSecuredServicePort;
         this.recipeConfigurationPort = recipeConfigurationPort;
     }
 
@@ -47,13 +47,13 @@ public class RecipeCollectionService {
      */
     public List<Recipe> generateRecipesWithIngredients(List<String> ingredients) throws InsufficientCreditsException, UserAccountNotFoundException {
         UserAccount.Credits recipeCost = recipeConfigurationPort.getRecipeCreationCost();
-        if (userAccountServicePort.getCreditBalance().compareTo(recipeCost) < 0){
+        if (userAccountSecuredServicePort.getCreditBalance().compareTo(recipeCost) < 0){
             throw new InsufficientCreditsException("Insufficient credits to generate recipes");
         }
         List<Recipe> generatedRecipes = recipeGenerationServicePort.generateRecipesWithIngredients(ingredients);
         RecipeCollection recipeCollection = recipeCollectionRepositoryPort.getRecipeCollectionOfUser();
         generatedRecipes.forEach(recipeCollection::addRecipe);
-        userAccountServicePort.subtractCredits(recipeCost);
+        userAccountSecuredServicePort.subtractCredits(recipeCost);
         return generatedRecipes;
     }
 

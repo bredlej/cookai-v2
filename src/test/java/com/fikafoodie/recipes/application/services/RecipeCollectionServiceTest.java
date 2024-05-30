@@ -7,10 +7,14 @@ import com.fikafoodie.recipes.domain.ports.secondary.RecipeConfigurationPort;
 import com.fikafoodie.recipes.infrastructure.adapters.secondary.fake.InMemoryRecipeGenerationAdapter;
 import com.fikafoodie.recipes.infrastructure.adapters.secondary.fake.InMemoryRecipeCollectionRepository;
 import com.fikafoodie.useraccount.domain.entities.UserAccount;
-import com.fikafoodie.useraccount.domain.ports.primary.UserAccountServicePort;
+import com.fikafoodie.useraccount.domain.ports.primary.UserAccountPublicServicePort;
+import com.fikafoodie.useraccount.domain.ports.primary.UserAccountSecuredServicePort;
+import com.fikafoodie.useraccount.domain.ports.secondary.UserAccountPublicRepositoryPort;
+import com.fikafoodie.useraccount.domain.ports.secondary.UserAccountSecuredRepositoryPort;
 import com.fikafoodie.useraccount.domain.valueobjects.Password;
 import com.fikafoodie.useraccount.infrastructure.adapters.primary.aws.UserAccountNotFoundException;
-import com.fikafoodie.useraccount.infrastructure.adapters.primary.fake.InMemoryUserAccountController;
+import com.fikafoodie.useraccount.infrastructure.adapters.primary.fake.open.InMemoryUserAccountPublicController;
+import com.fikafoodie.useraccount.infrastructure.adapters.primary.fake.secured.InMemoryUserAccountSecuredController;
 import com.fikafoodie.useraccount.infrastructure.adapters.secondary.fake.InMemoryUserAccountRepository;
 import io.quarkus.test.junit.QuarkusTest;
 import org.junit.jupiter.api.Assertions;
@@ -27,17 +31,18 @@ public class RecipeCollectionServiceTest {
 
     @Test
     void generatedRecipesShouldBeAddedToCollection() throws InsufficientCreditsException, UserAccountNotFoundException {
-        InMemoryUserAccountController userAccountController = new InMemoryUserAccountController(
-                new InMemoryUserAccountRepository(),
+        InMemoryUserAccountRepository userAccountRepository = new InMemoryUserAccountRepository();
+        UserAccountPublicServicePort userAccountController = new InMemoryUserAccountPublicController(
+                userAccountRepository,
                 () -> new UserAccount.Credits(1)
         );
         userAccountController.registerAccount(new UserAccount.Name("name"), new UserAccount.Email("email"), new Password("password"));
-        userAccountController.confirmAccount();
+        userAccountController.confirmAccount(new UserAccount.Name("name"));
 
         RecipeCollectionService recipeCollectionService = new RecipeCollectionService(
                 new InMemoryRecipeGenerationAdapter(),
                 new InMemoryRecipeCollectionRepository(),
-                userAccountController,
+                new InMemoryUserAccountSecuredController(userAccountRepository),
                 recipeConfiguration);
 
         List<Recipe> generatedRecipes = recipeCollectionService.generateRecipesWithIngredients(List.of("ingredient1", "ingredient2"));
@@ -48,37 +53,41 @@ public class RecipeCollectionServiceTest {
 
     @Test
     void generatedRecipesShouldBePaidFor() throws InsufficientCreditsException, UserAccountNotFoundException {
-        UserAccountServicePort userAccountController = new InMemoryUserAccountController(
-                new InMemoryUserAccountRepository(),
+        InMemoryUserAccountRepository userAccountRepository = new InMemoryUserAccountRepository();
+        UserAccountPublicServicePort userAccountController = new InMemoryUserAccountPublicController(
+                userAccountRepository,
                 () -> new UserAccount.Credits(1)
         );
+        UserAccountSecuredServicePort userAccountSecuredController = new InMemoryUserAccountSecuredController(userAccountRepository);
+
         userAccountController.registerAccount(new UserAccount.Name("name"), new UserAccount.Email("email"), new Password("password"));
-        userAccountController.confirmAccount();
+        userAccountController.confirmAccount(new UserAccount.Name("name"));
 
         RecipeCollectionService recipeCollectionService = new RecipeCollectionService(
                 new InMemoryRecipeGenerationAdapter(),
                 new InMemoryRecipeCollectionRepository(),
-                userAccountController,
+                new InMemoryUserAccountSecuredController(userAccountRepository),
                 recipeConfiguration);
 
         recipeCollectionService.generateRecipesWithIngredients(List.of("ingredient1", "ingredient2"));
 
-        Assertions.assertEquals(new UserAccount.Credits(0), userAccountController.getCreditBalance());
+        Assertions.assertEquals(new UserAccount.Credits(0), userAccountSecuredController.getCreditBalance());
     }
 
     @Test
     void shouldNotGenerateRecipesWithInsufficientCredits() throws UserAccountNotFoundException {
-        UserAccountServicePort userAccountServicePort = new InMemoryUserAccountController(
-                new InMemoryUserAccountRepository(),
+        UserAccountPublicRepositoryPort publicRepositoryPort = new InMemoryUserAccountRepository();
+        UserAccountPublicServicePort userAccountPublicServicePort = new InMemoryUserAccountPublicController(
+                publicRepositoryPort,
                 () -> new UserAccount.Credits(0)
         );
-        userAccountServicePort.registerAccount(new UserAccount.Name("name"), new UserAccount.Email("email"), new Password("password"));
-        userAccountServicePort.confirmAccount();
+        userAccountPublicServicePort.registerAccount(new UserAccount.Name("name"), new UserAccount.Email("email"), new Password("password"));
+        userAccountPublicServicePort.confirmAccount(new UserAccount.Name("name"));
 
         RecipeCollectionService recipeCollectionService = new RecipeCollectionService(
                 new InMemoryRecipeGenerationAdapter(),
                 new InMemoryRecipeCollectionRepository(),
-                userAccountServicePort,
+                new InMemoryUserAccountSecuredController((UserAccountSecuredRepositoryPort) publicRepositoryPort),
                 recipeConfiguration);
 
         var amountOfRecipesBefore = recipeCollectionService.getRecipeCollectionOfUser().getRecipes().value().size();

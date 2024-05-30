@@ -11,7 +11,9 @@ import jakarta.ws.rs.core.Response;
 
 @RequestScoped
 @Path("v1/user")
-public interface UserAccountControllerCognitoAPI {
+public interface UserAccountControllerPublicAPI {
+    String COGNITO_USERNAME_CLAIM = "cognito:username";
+
     @POST
     @Path("/sign-up")
     Response signUpRequest(SignUpDTO signUpDTO);
