@@ -7,6 +7,8 @@ import com.fikafoodie.useraccount.infrastructure.adapters.primary.aws.UserAccoun
 import io.vertx.core.impl.logging.Logger;
 import io.vertx.core.impl.logging.LoggerFactory;
 
+import java.util.Optional;
+
 /**
  * This class represents the public service for user accounts.
  * It contains methods for registering and confirming user accounts.
@@ -58,5 +60,9 @@ public class UserAccountPublicService {
         }
         userAccountPublicRepositoryPort.setAccountCredits(name, userAccountConfigurationPort.initialCredits());
         userAccountPublicRepositoryPort.setAccountStatus(name, UserAccount.Status.ACTIVE);
+    }
+
+    public Optional<UserAccount.Status> getAccountStatus(UserAccount.Name name) {
+        return userAccountPublicRepositoryPort.getAccountStatus(name);
     }
 }

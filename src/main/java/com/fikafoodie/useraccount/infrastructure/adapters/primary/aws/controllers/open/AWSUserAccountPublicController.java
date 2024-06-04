@@ -23,6 +23,8 @@ import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.cognitoidentityprovider.CognitoIdentityProviderClient;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.*;
 
+import java.util.Optional;
+
 @RequestScoped
 public class AWSUserAccountPublicController implements UserAccountPublicServicePort, UserAccountControllerPublicAPI {
     private final Logger logger = LoggerFactory.getLogger(AWSUserAccountPublicController.class);
@@ -37,6 +39,7 @@ public class AWSUserAccountPublicController implements UserAccountPublicServiceP
 
     @Inject
     public AWSUserAccountPublicController(@DynamoDB UserAccountPublicRepositoryPort userAccountPublicRepositoryPort) {
+
         userAccountPublicService = new UserAccountPublicService(userAccountPublicRepositoryPort, () -> new UserAccount.Credits(10));
     }
 
@@ -58,13 +61,17 @@ public class AWSUserAccountPublicController implements UserAccountPublicServiceP
     }
 
     @Override
-    public AuthenticateResponseDTO authenticateRequest(AuthenticateDTO authenticateDTO) {
-        return authenticate(
-                new UserAccount.Name(authenticateDTO.getName()),
-                new Password(authenticateDTO.getPassword()));
+    public Response authenticateRequest(AuthenticateDTO authenticateDTO) {
+        try {
+            return Response.ok().entity(authenticate(
+                    new UserAccount.Name(authenticateDTO.getName()),
+                    new Password(authenticateDTO.getPassword()))).build();
+        } catch (UserAccountInactiveException e) {
+            return Response.status(Response.Status.FORBIDDEN).entity("User account not active").build();
+        }
     }
 
-    private AuthenticateResponseDTO authenticate(UserAccount.Name name, Password password) {
+    private AuthenticateResponseDTO authenticate(UserAccount.Name name, Password password) throws UserAccountInactiveException {
         AdminInitiateAuthRequest authRequest = AdminInitiateAuthRequest.builder()
                 .authFlow(AuthFlowType.ADMIN_NO_SRP_AUTH)
                 .clientId(clientId)
@@ -91,6 +98,11 @@ public class AWSUserAccountPublicController implements UserAccountPublicServiceP
             logger.error("Error authenticating user", e);
         }
 
+        Optional<UserAccount.Status> accountStatus = userAccountPublicService.getAccountStatus(name);
+        if (accountStatus.isEmpty() || accountStatus.get() != UserAccount.Status.ACTIVE) {
+            throw new UserAccountInactiveException("User account not active");
+        }
+
         return responseDTO;
     }
 
@@ -105,11 +117,8 @@ public class AWSUserAccountPublicController implements UserAccountPublicServiceP
                 .userPoolId(userPoolId).build();
 
         try (CognitoIdentityProviderClient cognitoIdentityProviderClient = CognitoIdentityProviderClient.builder().region(Region.EU_WEST_1).build()) {
-            ConfirmSignUpResponse result = cognitoIdentityProviderClient.confirmSignUp(confirmSignUpRequest);
-            logger.info("Sign up result: " + result);
-            AdminAddUserToGroupResponse addUserToGroupResponse = cognitoIdentityProviderClient.adminAddUserToGroup(adminAddUserToGroupRequest);
-            logger.info("Add user to group result: " + addUserToGroupResponse);
-
+            cognitoIdentityProviderClient.confirmSignUp(confirmSignUpRequest);
+            cognitoIdentityProviderClient.adminAddUserToGroup(adminAddUserToGroupRequest);
             userAccountPublicService.confirmAccount(name);
         } catch (UserAccountNotFoundException e) {
             throw new RuntimeException(e);

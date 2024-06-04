@@ -90,14 +90,6 @@ public class RecipeCollectionServiceTest {
                 new InMemoryUserAccountSecuredController((UserAccountSecuredRepositoryPort) publicRepositoryPort),
                 recipeConfiguration);
 
-        var amountOfRecipesBefore = recipeCollectionService.getRecipeCollectionOfUser().getRecipes().value().size();
-        try {
-            recipeCollectionService.generateRecipesWithIngredients(List.of("ingredient1", "ingredient2"));
-        } catch (InsufficientCreditsException e) {
-            var amountOfRecipesAfter = recipeCollectionService.getRecipeCollectionOfUser().getRecipes().value().size();
-            Assertions.assertEquals(amountOfRecipesBefore, amountOfRecipesAfter);
-            return;
-        }
-        Assertions.fail();
+        Assertions.assertThrows(InsufficientCreditsException.class, () -> recipeCollectionService.generateRecipesWithIngredients(List.of("ingredient1", "ingredient2")));
     }
 }

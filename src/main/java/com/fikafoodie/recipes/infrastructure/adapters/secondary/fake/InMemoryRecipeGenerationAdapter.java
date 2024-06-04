@@ -14,8 +14,8 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-@InMemory
 @RequestScoped
+@InMemory
 public class InMemoryRecipeGenerationAdapter implements RecipeGenerationServicePort {
     List<Recipe> generatedRecipes = new ArrayList<>();
 

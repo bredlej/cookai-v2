@@ -9,6 +9,7 @@ import com.fikafoodie.recipes.domain.ports.secondary.RecipeConfigurationPort;
 import com.fikafoodie.useraccount.domain.entities.UserAccount;
 import com.fikafoodie.useraccount.domain.ports.primary.UserAccountSecuredServicePort;
 import com.fikafoodie.useraccount.infrastructure.adapters.primary.aws.UserAccountNotFoundException;
+import jakarta.transaction.Transactional;
 
 import java.util.List;
 
@@ -26,10 +27,11 @@ public class RecipeCollectionService {
 
     /**
      * Constructor for the RecipeCollectionService class.
-     * @param recipeGenerationServicePort The service used to generate recipes.
+     *
+     * @param recipeGenerationServicePort    The service used to generate recipes.
      * @param recipeCollectionRepositoryPort The repository for storing and retrieving recipe collections.
-     * @param userAccountSecuredServicePort The service for managing user accounts and credits.
-     * @param recipeConfigurationPort The service for retrieving recipe configuration details.
+     * @param userAccountSecuredServicePort  The service for managing user accounts and credits.
+     * @param recipeConfigurationPort        The service for retrieving recipe configuration details.
      */
     public RecipeCollectionService(RecipeGenerationServicePort recipeGenerationServicePort, RecipeCollectionRepositoryPort recipeCollectionRepositoryPort, UserAccountSecuredServicePort userAccountSecuredServicePort, RecipeConfigurationPort recipeConfigurationPort) {
         this.recipeGenerationServicePort = recipeGenerationServicePort;
@@ -41,32 +43,49 @@ public class RecipeCollectionService {
     /**
      * Generates recipes based on the provided ingredients and adds them to the user's recipe collection.
      * The user's credits are checked before generating recipes and are deducted after successful generation.
+     *
      * @param ingredients The list of ingredients to generate recipes from.
      * @return The list of generated recipes.
      * @throws InsufficientCreditsException If the user does not have enough credits to generate recipes.
      */
+    @Transactional
     public List<Recipe> generateRecipesWithIngredients(List<String> ingredients) throws InsufficientCreditsException, UserAccountNotFoundException {
         UserAccount.Credits recipeCost = recipeConfigurationPort.getRecipeCreationCost();
-        if (userAccountSecuredServicePort.getCreditBalance().compareTo(recipeCost) < 0){
+        if (userAccountSecuredServicePort.getCreditBalance().compareTo(recipeCost) < 0) {
             throw new InsufficientCreditsException("Insufficient credits to generate recipes");
         }
         List<Recipe> generatedRecipes = recipeGenerationServicePort.generateRecipesWithIngredients(ingredients);
-        RecipeCollection recipeCollection = recipeCollectionRepositoryPort.getRecipeCollectionOfUser();
-        generatedRecipes.forEach(recipeCollection::addRecipe);
+        generatedRecipes.forEach(recipe -> {
+            try {
+                recipeCollectionRepositoryPort.addRecipeToCollection(recipe);
+            } catch (UserAccountNotFoundException e) {
+                throw new RuntimeException(e);
+            }
+        });
+
         userAccountSecuredServicePort.subtractCredits(recipeCost);
         return generatedRecipes;
     }
 
     /**
      * Retrieves the user's current recipe collection.
+     *
      * @return The user's recipe collection.
      */
     public RecipeCollection getRecipeCollectionOfUser() {
-        return recipeCollectionRepositoryPort.getRecipeCollectionOfUser();
+        try {
+            return recipeCollectionRepositoryPort.getRecipeCollectionOfUser();
+        } catch (UserAccountNotFoundException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public void addRecipeToCollection(Recipe recipe) {
-        RecipeCollection recipeCollection = recipeCollectionRepositoryPort.getRecipeCollectionOfUser();
-        recipeCollection.addRecipe(recipe);
+        try {
+            recipeCollectionRepositoryPort.addRecipeToCollection(recipe);
+        } catch (UserAccountNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+
     }
 }

@@ -21,8 +21,8 @@ public class DynamoDBUserAccountPublicRepository implements UserAccountPublicRep
     private final DynamoDbClient dynamoDbClient;
 
     @Inject
-    @ConfigProperty(name = "aws.dynamodb.fikafoodie.useraccount.table")
-    String userAccountTableName;
+    @ConfigProperty(name = "aws.dynamodb.fikafoodie.useraccounts.table")
+    String userAccountsTableName;
 
     @Inject
     public DynamoDBUserAccountPublicRepository(DynamoDbClient dynamoDbClient) {
@@ -58,7 +58,7 @@ public class DynamoDBUserAccountPublicRepository implements UserAccountPublicRep
         key.put(USER_ACCOUNT_NAME_COLUMN, AttributeValue.builder().s(name.value()).build());
 
         return GetItemRequest.builder()
-                .tableName(userAccountTableName)
+                .tableName(userAccountsTableName)
                 .key(key)
                 .build();
     }
@@ -72,7 +72,7 @@ public class DynamoDBUserAccountPublicRepository implements UserAccountPublicRep
         item.put(USER_ACCOUNT_STATUS_COLUMN, AttributeValue.builder().s(userAccount.getStatus().name()).build());
 
         return PutItemRequest.builder()
-                .tableName(userAccountTableName)
+                .tableName(userAccountsTableName)
                 .item(item)
                 .build();
     }
@@ -83,7 +83,7 @@ public class DynamoDBUserAccountPublicRepository implements UserAccountPublicRep
         Map<String, AttributeValueUpdate> valueUpdateMap = new HashMap<>();
         valueUpdateMap.put(USER_ACCOUNT_CREDITS_COLUMN, AttributeValueUpdate.builder().value(AttributeValue.builder().n(String.valueOf(credits.value())).build()).action(AttributeAction.PUT).build());
         return UpdateItemRequest.builder()
-                .tableName(userAccountTableName)
+                .tableName(userAccountsTableName)
                 .key(item)
                 .attributeUpdates(valueUpdateMap)
                 .build();
@@ -95,7 +95,7 @@ public class DynamoDBUserAccountPublicRepository implements UserAccountPublicRep
         Map<String, AttributeValueUpdate> valueUpdateMap = new HashMap<>();
         valueUpdateMap.put(USER_ACCOUNT_STATUS_COLUMN, AttributeValueUpdate.builder().value(AttributeValue.builder().s(status.name()).build()).action(AttributeAction.PUT).build());
         return UpdateItemRequest.builder()
-                .tableName(userAccountTableName)
+                .tableName(userAccountsTableName)
                 .key(item)
                 .attributeUpdates(valueUpdateMap)
                 .build();

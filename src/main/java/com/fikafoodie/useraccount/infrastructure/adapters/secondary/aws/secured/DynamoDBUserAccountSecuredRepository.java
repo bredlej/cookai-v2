@@ -26,7 +26,7 @@ public class DynamoDBUserAccountSecuredRepository implements UserAccountSecuredR
     JsonWebToken jwt;
 
     @Inject
-    @ConfigProperty(name = "aws.dynamodb.fikafoodie.useraccount.table")
+    @ConfigProperty(name = "aws.dynamodb.fikafoodie.useraccounts.table")
     String userAccountTableName;
 
     private final DynamoDbClient dynamoDbClient;
@@ -38,7 +38,7 @@ public class DynamoDBUserAccountSecuredRepository implements UserAccountSecuredR
 
     @Override
     public Optional<UserAccount> getUserAccount() throws UserAccountNotFoundException {
-        if (jwt.getClaim(UserAccountControllerPublicAPI.COGNITO_USERNAME_CLAIM) != null) {
+        if (jwt.getClaim(UserAccountControllerPublicAPI.COGNITO_USERNAME_CLAIM) == null) {
             throw new UserAccountNotFoundException("User account not found");
         }
         return Optional.of(

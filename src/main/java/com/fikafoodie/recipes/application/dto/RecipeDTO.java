@@ -19,6 +19,7 @@ public class RecipeDTO {
     public static RecipeDTO fromDomain(Recipe recipe) {
         RecipeDTO recipeDTO = new RecipeDTO();
         recipeDTO.setId(recipe.getId().value());
+        recipeDTO.setSummary(recipe.getSummary().value());
         recipeDTO.setName(recipe.getName().value());
         recipeDTO.setIngredients(IngredientDTO.fromDomain(recipe.getIngredients().value()));
         recipeDTO.setInstructions(recipe.getInstructions().value());
@@ -30,9 +31,8 @@ public class RecipeDTO {
 
     public static Recipe toDomain(RecipeDTO recipeDTO) {
         Recipe recipe = new Recipe();
-        recipe.setId(new Recipe.Id(recipeDTO.getId()));
         recipe.setName(new Recipe.Name(recipeDTO.getName()));
-
+        recipe.setSummary(new Recipe.Summary(recipeDTO.getSummary()));
         recipe.setIngredients(new Recipe.Ingredients(IngredientDTO.toDomain(recipeDTO.getIngredients())));
         recipe.setInstructions(new Recipe.Instructions(recipeDTO.getInstructions()));
         recipe.setTags(new Recipe.Tags(recipeDTO.getTags()));
