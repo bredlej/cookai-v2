@@ -7,7 +7,9 @@ import lombok.Setter;
 import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbAttribute;
 import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbBean;
 import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbPartitionKey;
+import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbSortKey;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Setter
@@ -23,6 +25,7 @@ public class DynamoDBRecipeEntity {
     private List<String> tags;
     private String picture;
     private String notes;
+    private LocalDateTime createdAt;
 
     @DynamoDbPartitionKey
     @DynamoDbAttribute(DynamoDBRecipesTableProperties.RECIPE_COLLECTION_OWNERID_COLUMN)
@@ -68,6 +71,12 @@ public class DynamoDBRecipeEntity {
     @DynamoDbAttribute(DynamoDBRecipesTableProperties.RECIPE_COLLECTION_NAME_COLUMN)
     public String getName() {
         return name;
+    }
+
+    @DynamoDbAttribute(DynamoDBRecipesTableProperties.RECIPE_COLLECTION_CREATED_AT_COLUMN)
+    @DynamoDbSortKey
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
     }
 
     @Setter

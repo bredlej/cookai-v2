@@ -71,7 +71,7 @@ public class DynamoDBRecipeCollectionRepository implements RecipeCollectionRepos
         item.setPicture(recipe.getPicture().value());
         item.setNotes(recipe.getNotes().value());
         item.setTags(recipe.getTags().value());
-
+        item.setCreatedAt(java.time.LocalDateTime.now());
         recipesTable.putItem(item);
     }
 

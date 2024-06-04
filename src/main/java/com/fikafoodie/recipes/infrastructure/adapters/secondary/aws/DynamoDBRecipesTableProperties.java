@@ -10,4 +10,5 @@ public class DynamoDBRecipesTableProperties {
     public static final String RECIPE_COLLECTION_TAGS_COLUMN = "tags";
     public static final String RECIPE_COLLECTION_PICTURE_COLUMN = "picture";
     public static final String RECIPE_COLLECTION_NOTES_COLUMN = "notes";
+    public static final String RECIPE_COLLECTION_CREATED_AT_COLUMN = "createdAt";
 }
