@@ -59,19 +59,10 @@ public class DynamoDBRecipeCollectionRepository implements RecipeCollectionRepos
 
     @Override
     public void addRecipeToCollection(Recipe recipe) {
-        DynamoDBRecipeEntity item = new DynamoDBRecipeEntity();
+        DynamoDBRecipeEntity item = DynamoDBRecipeEntity.fromDomain(recipe);
         item.setOwnerId(jwt.getClaim(UserAccountControllerPublicAPI.COGNITO_USERNAME_CLAIM));
         item.setRecipeId(UUID.randomUUID().toString());
-        item.setName(recipe.getName().value());
-        item.setSummary(recipe.getSummary().value());
-        item.setIngredients(recipe.getIngredients().value().stream()
-                .map(IngredientConverter::convertToDynamoDBIngredient)
-                .collect(Collectors.toList()));
-        item.setInstructions(recipe.getInstructions().value());
-        item.setPicture(recipe.getPicture().value());
-        item.setNotes(recipe.getNotes().value());
-        item.setTags(recipe.getTags().value());
-        item.setCreatedAt(java.time.LocalDateTime.now());
+
         recipesTable.putItem(item);
     }
 

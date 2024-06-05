@@ -1,5 +1,6 @@
 package com.fikafoodie.recipes.infrastructure.entities;
 
+import com.fikafoodie.recipes.domain.entities.Recipe;
 import com.fikafoodie.recipes.infrastructure.adapters.secondary.aws.DynamoDBRecipesTableProperties;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 import lombok.Getter;
@@ -89,6 +90,28 @@ public class DynamoDBRecipeEntity {
         private String unit;
         private boolean optional;
         private String type;
+    }
 
+    public static DynamoDBRecipeEntity fromDomain(Recipe recipe) {
+        DynamoDBRecipeEntity entity = new DynamoDBRecipeEntity();
+        entity.setRecipeId(recipe.getId().value());
+        entity.setName(recipe.getName().value());
+        entity.setSummary(recipe.getSummary().value());
+        entity.setIngredients(recipe.getIngredients().value().stream()
+                .map(ingredient -> {
+                    Ingredient i = new Ingredient();
+                    i.setName(ingredient.getName().value());
+                    i.setQuantity(ingredient.getQuantity().value());
+                    i.setUnit(ingredient.getUnit().value());
+                    i.setOptional(ingredient.isOptional());
+                    i.setType(ingredient.getType().value());
+                    return i;
+                })
+                .toList());
+        entity.setInstructions(recipe.getInstructions().value());
+        entity.setTags(recipe.getTags().value());
+        entity.setPicture(recipe.getPicture().value());
+        entity.setNotes(recipe.getNotes().value());
+        return entity;
     }
 }

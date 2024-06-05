@@ -17,6 +17,7 @@ public interface UserAccountControllerPublicAPI {
     @Path("/sign-up")
     Response signUpRequest(SignUpDTO signUpDTO);
 
+    @POST
     @Path("/confirm-sign-up")
     Response confirmSignUpRequest(ConfirmSignUpDTO confirmSignUpDTO);
 

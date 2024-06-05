@@ -6,4 +6,5 @@ public interface DynamoDBUserAccountTableProperties {
     String USER_ACCOUNT_EMAIL_COLUMN = "email";
     String USER_ACCOUNT_CREDITS_COLUMN = "credits";
     String USER_ACCOUNT_STATUS_COLUMN = "status";
+    String USER_ACCOUNT_CREATED_AT_COLUMN = "createdAt";
 }

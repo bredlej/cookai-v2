@@ -4,102 +4,58 @@ import com.fikafoodie.kernel.qualifiers.DynamoDB;
 import com.fikafoodie.useraccount.domain.entities.UserAccount;
 import com.fikafoodie.useraccount.domain.ports.secondary.UserAccountPublicRepositoryPort;
 import com.fikafoodie.useraccount.infrastructure.adapters.secondary.aws.DynamoDBUserAccountTableProperties;
+import com.fikafoodie.useraccount.infrastructure.entities.DynamoDBUserAccountEntity;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
-import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
-import software.amazon.awssdk.services.dynamodb.model.*;
+import org.jetbrains.annotations.NotNull;
+import software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedClient;
+import software.amazon.awssdk.enhanced.dynamodb.DynamoDbTable;
+import software.amazon.awssdk.enhanced.dynamodb.TableSchema;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 @RequestScoped
 @DynamoDB
 public class DynamoDBUserAccountPublicRepository implements UserAccountPublicRepositoryPort, DynamoDBUserAccountTableProperties {
 
-    private final DynamoDbClient dynamoDbClient;
+    private final DynamoDbTable<DynamoDBUserAccountEntity> userAccountsTable;
 
     @Inject
-    @ConfigProperty(name = "aws.dynamodb.fikafoodie.useraccounts.table")
-    String userAccountsTableName;
-
-    @Inject
-    public DynamoDBUserAccountPublicRepository(DynamoDbClient dynamoDbClient) {
-        this.dynamoDbClient = dynamoDbClient;
+    public DynamoDBUserAccountPublicRepository(@NotNull DynamoDbEnhancedClient dynamoDbEnhancedClient, @ConfigProperty(name = "aws.dynamodb.fikafoodie.useraccounts.table") String userAccountsTableName) {
+        this.userAccountsTable = dynamoDbEnhancedClient.table(userAccountsTableName, TableSchema.fromBean(DynamoDBUserAccountEntity.class));
     }
 
     @Override
     public void createAccount(UserAccount userAccount) {
-        dynamoDbClient.putItem(putRequest(userAccount));
+
+        DynamoDBUserAccountEntity entity = DynamoDBUserAccountEntity.fromDomain(userAccount);
+        entity.setCreatedAt(LocalDateTime.now());
+
+        userAccountsTable.putItem(entity);
     }
 
     @Override
     public void setAccountCredits(UserAccount.Name name, UserAccount.Credits credits) {
-        dynamoDbClient.updateItem(updateCreditRequest(name, credits));
+        DynamoDBUserAccountEntity userAccountEntity = userAccountsTable.getItem(r -> r.key(k -> k.partitionValue(name.value())));
+        userAccountEntity.setCredits(credits.value());
+        userAccountsTable.updateItem(userAccountEntity);
     }
 
     @Override
     public void setAccountStatus(UserAccount.Name name, UserAccount.Status status) {
-        dynamoDbClient.updateItem(updateStatusRequest(name, status));
+        DynamoDBUserAccountEntity userAccountEntity = userAccountsTable.getItem(r -> r.key(k -> k.partitionValue(name.value())));
+        userAccountEntity.setStatus(status.name());
+        userAccountsTable.updateItem(userAccountEntity);
     }
 
     @Override
     public Optional<UserAccount.Status> getAccountStatus(UserAccount.Name name) {
-        var item = dynamoDbClient.getItem(getRequest(name));
-        if (item != null && item.hasItem()) {
-            return Optional.of(UserAccount.Status.valueOf(item.item().get(USER_ACCOUNT_STATUS_COLUMN).s()));
+        DynamoDBUserAccountEntity userAccountEntity = userAccountsTable.getItem(r -> r.key(k -> k.partitionValue(name.value())));
+        if (userAccountEntity != null) {
+            return Optional.of(UserAccount.Status.valueOf(userAccountEntity.getStatus()));
         }
         return Optional.empty();
     }
-
-    private GetItemRequest getRequest(UserAccount.Name name) {
-        Map<String, AttributeValue> key = new HashMap<>();
-        key.put(USER_ACCOUNT_NAME_COLUMN, AttributeValue.builder().s(name.value()).build());
-
-        return GetItemRequest.builder()
-                .tableName(userAccountsTableName)
-                .key(key)
-                .build();
-    }
-
-    private PutItemRequest putRequest(UserAccount userAccount) {
-        Map<String, AttributeValue> item = new HashMap<>();
-        item.put(USER_ACCOUNT_OWNERID_COLUMN, AttributeValue.builder().s(userAccount.getId().value()).build());
-        item.put(USER_ACCOUNT_NAME_COLUMN, AttributeValue.builder().s(userAccount.getName().value()).build());
-        item.put(USER_ACCOUNT_EMAIL_COLUMN, AttributeValue.builder().s(userAccount.getEmail().value()).build());
-        item.put(USER_ACCOUNT_CREDITS_COLUMN, AttributeValue.builder().n(String.valueOf(userAccount.creditBalance().value())).build());
-        item.put(USER_ACCOUNT_STATUS_COLUMN, AttributeValue.builder().s(userAccount.getStatus().name()).build());
-
-        return PutItemRequest.builder()
-                .tableName(userAccountsTableName)
-                .item(item)
-                .build();
-    }
-
-    private UpdateItemRequest updateCreditRequest(UserAccount.Name name, UserAccount.Credits credits) {
-        Map<String, AttributeValue> item = new HashMap<>();
-        item.put(USER_ACCOUNT_NAME_COLUMN, AttributeValue.builder().s(name.value()).build());
-        Map<String, AttributeValueUpdate> valueUpdateMap = new HashMap<>();
-        valueUpdateMap.put(USER_ACCOUNT_CREDITS_COLUMN, AttributeValueUpdate.builder().value(AttributeValue.builder().n(String.valueOf(credits.value())).build()).action(AttributeAction.PUT).build());
-        return UpdateItemRequest.builder()
-                .tableName(userAccountsTableName)
-                .key(item)
-                .attributeUpdates(valueUpdateMap)
-                .build();
-    }
-
-    private UpdateItemRequest updateStatusRequest(UserAccount.Name name, UserAccount.Status status) {
-        Map<String, AttributeValue> item = new HashMap<>();
-        item.put(USER_ACCOUNT_NAME_COLUMN, AttributeValue.builder().s(name.value()).build());
-        Map<String, AttributeValueUpdate> valueUpdateMap = new HashMap<>();
-        valueUpdateMap.put(USER_ACCOUNT_STATUS_COLUMN, AttributeValueUpdate.builder().value(AttributeValue.builder().s(status.name()).build()).action(AttributeAction.PUT).build());
-        return UpdateItemRequest.builder()
-                .tableName(userAccountsTableName)
-                .key(item)
-                .attributeUpdates(valueUpdateMap)
-                .build();
-    }
-
-
 }
