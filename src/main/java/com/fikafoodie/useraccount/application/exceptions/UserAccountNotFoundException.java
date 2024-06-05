@@ -1,4 +1,4 @@
-package com.fikafoodie.useraccount.infrastructure.adapters.primary.aws;
+package com.fikafoodie.useraccount.application.exceptions;
 
 public class UserAccountNotFoundException extends Throwable {
     public UserAccountNotFoundException(String message) {

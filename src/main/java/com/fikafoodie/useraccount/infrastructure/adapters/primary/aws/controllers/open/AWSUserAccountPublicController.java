@@ -10,7 +10,7 @@ import com.fikafoodie.useraccount.domain.valueobjects.ConfirmationCode;
 import com.fikafoodie.useraccount.domain.valueobjects.Password;
 import com.fikafoodie.useraccount.domain.ports.primary.UserAccountPublicServicePort;
 import com.fikafoodie.useraccount.domain.ports.secondary.UserAccountPublicRepositoryPort;
-import com.fikafoodie.useraccount.infrastructure.adapters.primary.aws.UserAccountNotFoundException;
+import com.fikafoodie.useraccount.application.exceptions.UserAccountNotFoundException;
 import com.fikafoodie.useraccount.infrastructure.adapters.primary.aws.api.UserAccountControllerPublicAPI;
 import com.fikafoodie.useraccount.infrastructure.adapters.primary.aws.dto.AuthenticateResponseDTO;
 import io.vertx.core.impl.logging.Logger;

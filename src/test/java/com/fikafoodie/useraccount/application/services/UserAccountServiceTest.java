@@ -3,7 +3,7 @@ package com.fikafoodie.useraccount.application.services;
 import com.fikafoodie.useraccount.domain.entities.UserAccount;
 import com.fikafoodie.useraccount.domain.ports.secondary.UserAccountPublicRepositoryPort;
 import com.fikafoodie.useraccount.domain.ports.secondary.UserAccountSecuredRepositoryPort;
-import com.fikafoodie.useraccount.infrastructure.adapters.primary.aws.UserAccountNotFoundException;
+import com.fikafoodie.useraccount.application.exceptions.UserAccountNotFoundException;
 import com.fikafoodie.useraccount.infrastructure.adapters.primary.fake.InMemoryUserAccountConfiguration;
 import com.fikafoodie.useraccount.infrastructure.adapters.secondary.fake.InMemoryUserAccountRepository;
 import io.quarkus.test.junit.QuarkusTest;

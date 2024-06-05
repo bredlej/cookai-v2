@@ -3,6 +3,7 @@ package com.fikafoodie.recipes.domain.entities;
 import com.fikafoodie.recipes.domain.valueobjects.Ingredient;
 import lombok.Data;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,6 +17,7 @@ public class Recipe {
     private Tags tags = new Tags(new ArrayList<>());
     private Picture picture = new Picture("");
     private Notes notes = new Notes("");
+    private LocalDateTime creationDate = LocalDateTime.now();
 
     public record Id(String value) {
         public Id {

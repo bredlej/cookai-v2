@@ -36,6 +36,7 @@ public class DynamoDBRecipeEntity {
     }
 
     @DynamoDbAttribute(DynamoDBRecipesTableProperties.RECIPE_COLLECTION_RECIPEID_COLUMN)
+    @DynamoDbSortKey
     public String getRecipeId() {
         return recipeId;
     }
@@ -76,7 +77,7 @@ public class DynamoDBRecipeEntity {
     }
 
     @DynamoDbAttribute(DynamoDBRecipesTableProperties.RECIPE_COLLECTION_CREATED_AT_COLUMN)
-    @DynamoDbSortKey
+
     public LocalDateTime getCreatedAt() {
         return createdAt;
     }
@@ -114,6 +115,7 @@ public class DynamoDBRecipeEntity {
         entity.setTags(recipe.getTags().value());
         entity.setPicture(recipe.getPicture().value());
         entity.setNotes(recipe.getNotes().value());
+        entity.setCreatedAt(recipe.getCreationDate());
         return entity;
     }
 
@@ -135,6 +137,7 @@ public class DynamoDBRecipeEntity {
         recipe.setTags(new Recipe.Tags(item.getTags()));
         recipe.setPicture(new Recipe.Picture(item.getPicture()));
         recipe.setNotes(new Recipe.Notes(item.getNotes()));
+        recipe.setCreationDate(item.getCreatedAt());
         return recipe;
     }
 }

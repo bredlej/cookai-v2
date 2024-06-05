@@ -31,6 +31,7 @@ public class RecipeDTO {
 
     public static Recipe toDomain(RecipeDTO recipeDTO) {
         Recipe recipe = new Recipe();
+        recipe.setId(new Recipe.Id(recipeDTO.getId()));
         recipe.setName(new Recipe.Name(recipeDTO.getName()));
         recipe.setSummary(new Recipe.Summary(recipeDTO.getSummary()));
         recipe.setIngredients(new Recipe.Ingredients(IngredientDTO.toDomain(recipeDTO.getIngredients())));

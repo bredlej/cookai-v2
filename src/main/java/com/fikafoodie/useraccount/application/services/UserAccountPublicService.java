@@ -3,7 +3,7 @@ package com.fikafoodie.useraccount.application.services;
 import com.fikafoodie.useraccount.domain.entities.UserAccount;
 import com.fikafoodie.useraccount.domain.ports.secondary.UserAccountConfigurationPort;
 import com.fikafoodie.useraccount.domain.ports.secondary.UserAccountPublicRepositoryPort;
-import com.fikafoodie.useraccount.infrastructure.adapters.primary.aws.UserAccountNotFoundException;
+import com.fikafoodie.useraccount.application.exceptions.UserAccountNotFoundException;
 import io.vertx.core.impl.logging.Logger;
 import io.vertx.core.impl.logging.LoggerFactory;
 

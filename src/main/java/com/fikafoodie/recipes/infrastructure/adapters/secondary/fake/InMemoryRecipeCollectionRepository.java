@@ -8,7 +8,8 @@ import com.fikafoodie.recipes.application.dto.RecipeDTO;
 import com.fikafoodie.recipes.domain.aggregates.RecipeCollection;
 import com.fikafoodie.recipes.domain.entities.Recipe;
 import com.fikafoodie.recipes.domain.ports.secondary.RecipeCollectionRepositoryPort;
-import com.fikafoodie.useraccount.infrastructure.adapters.primary.aws.UserAccountNotFoundException;
+import com.fikafoodie.recipes.domain.ports.secondary.RecipeNotFoundException;
+import com.fikafoodie.recipes.application.exceptions.RecipeCollectionNotFoundException;
 import io.vertx.core.impl.logging.Logger;
 import io.vertx.core.impl.logging.LoggerFactory;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -40,7 +41,12 @@ public class InMemoryRecipeCollectionRepository implements RecipeCollectionRepos
     }
 
     @Override
-    public void addRecipeToCollection(Recipe recipe) throws UserAccountNotFoundException {
+    public void addRecipeToCollection(Recipe recipe) throws RecipeCollectionNotFoundException {
         recipeCollection.addRecipe(recipe);
+    }
+
+    @Override
+    public void updateRecipeInCollection(Recipe recipe) throws RecipeCollectionNotFoundException, RecipeNotFoundException {
+        recipeCollection.updateRecipe(recipe);
     }
 }

@@ -3,7 +3,7 @@ package com.fikafoodie.useraccount.infrastructure.adapters.secondary.aws.secured
 import com.fikafoodie.kernel.qualifiers.DynamoDB;
 import com.fikafoodie.useraccount.domain.entities.UserAccount;
 import com.fikafoodie.useraccount.domain.ports.secondary.UserAccountSecuredRepositoryPort;
-import com.fikafoodie.useraccount.infrastructure.adapters.primary.aws.UserAccountNotFoundException;
+import com.fikafoodie.useraccount.application.exceptions.UserAccountNotFoundException;
 import com.fikafoodie.useraccount.infrastructure.adapters.primary.aws.api.UserAccountControllerPublicAPI;
 import com.fikafoodie.useraccount.infrastructure.adapters.secondary.aws.DynamoDBUserAccountTableProperties;
 import com.fikafoodie.useraccount.infrastructure.entities.DynamoDBUserAccountEntity;

@@ -12,8 +12,10 @@ import com.fikafoodie.recipes.domain.ports.primary.RecipeCollectionServicePort;
 import com.fikafoodie.recipes.domain.ports.secondary.RecipeCollectionRepositoryPort;
 import com.fikafoodie.recipes.domain.ports.secondary.RecipeConfigurationPort;
 import com.fikafoodie.recipes.domain.ports.secondary.RecipeGenerationServicePort;
+import com.fikafoodie.recipes.domain.ports.secondary.RecipeNotFoundException;
+import com.fikafoodie.recipes.application.exceptions.RecipeCollectionNotFoundException;
 import com.fikafoodie.useraccount.domain.ports.primary.UserAccountSecuredServicePort;
-import com.fikafoodie.useraccount.infrastructure.adapters.primary.aws.UserAccountNotFoundException;
+import com.fikafoodie.useraccount.application.exceptions.UserAccountNotFoundException;
 import io.quarkus.security.Authenticated;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
@@ -59,7 +61,11 @@ public class InMemoryRecipeCollectionRestController implements RecipeCollectionS
     @POST
     @Path("/add")
     public void addRecipe(RecipeDTO recipeDTO) {
-        addRecipeToCollection(RecipeDTO.toDomain(recipeDTO));
+        try {
+            addRecipeToCollection(RecipeDTO.toDomain(recipeDTO));
+        } catch (RecipeCollectionNotFoundException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @POST
@@ -85,8 +91,13 @@ public class InMemoryRecipeCollectionRestController implements RecipeCollectionS
     }
 
     @Override
-    public void addRecipeToCollection(Recipe recipe) {
+    public void addRecipeToCollection(Recipe recipe) throws RecipeCollectionNotFoundException {
         recipeCollectionService.addRecipeToCollection(recipe);
+    }
+
+    @Override
+    public void updateRecipeInCollection(Recipe recipe) throws RecipeNotFoundException, RecipeCollectionNotFoundException {
+        recipeCollectionService.updateRecipeInCollection(recipe);
     }
 }
 

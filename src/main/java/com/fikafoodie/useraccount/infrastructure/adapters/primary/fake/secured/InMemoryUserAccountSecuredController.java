@@ -4,7 +4,7 @@ import com.fikafoodie.kernel.qualifiers.InMemory;
 import com.fikafoodie.useraccount.domain.entities.UserAccount;
 import com.fikafoodie.useraccount.domain.ports.primary.UserAccountSecuredServicePort;
 import com.fikafoodie.useraccount.domain.ports.secondary.UserAccountSecuredRepositoryPort;
-import com.fikafoodie.useraccount.infrastructure.adapters.primary.aws.UserAccountNotFoundException;
+import com.fikafoodie.useraccount.application.exceptions.UserAccountNotFoundException;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 

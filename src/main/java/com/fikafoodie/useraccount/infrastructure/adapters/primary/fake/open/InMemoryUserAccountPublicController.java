@@ -7,7 +7,7 @@ import com.fikafoodie.useraccount.domain.ports.primary.UserAccountPublicServiceP
 import com.fikafoodie.useraccount.domain.ports.secondary.UserAccountConfigurationPort;
 import com.fikafoodie.useraccount.domain.ports.secondary.UserAccountPublicRepositoryPort;
 import com.fikafoodie.useraccount.domain.valueobjects.Password;
-import com.fikafoodie.useraccount.infrastructure.adapters.primary.aws.UserAccountNotFoundException;
+import com.fikafoodie.useraccount.application.exceptions.UserAccountNotFoundException;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 

@@ -6,9 +6,11 @@ import com.fikafoodie.recipes.domain.aggregates.RecipeCollection;
 import com.fikafoodie.recipes.domain.ports.secondary.RecipeGenerationServicePort;
 import com.fikafoodie.recipes.domain.ports.secondary.RecipeCollectionRepositoryPort;
 import com.fikafoodie.recipes.domain.ports.secondary.RecipeConfigurationPort;
+import com.fikafoodie.recipes.domain.ports.secondary.RecipeNotFoundException;
+import com.fikafoodie.recipes.application.exceptions.RecipeCollectionNotFoundException;
 import com.fikafoodie.useraccount.domain.entities.UserAccount;
 import com.fikafoodie.useraccount.domain.ports.primary.UserAccountSecuredServicePort;
-import com.fikafoodie.useraccount.infrastructure.adapters.primary.aws.UserAccountNotFoundException;
+import com.fikafoodie.useraccount.application.exceptions.UserAccountNotFoundException;
 import jakarta.transaction.Transactional;
 
 import java.util.List;
@@ -58,7 +60,7 @@ public class RecipeCollectionService {
         generatedRecipes.forEach(recipe -> {
             try {
                 recipeCollectionRepositoryPort.addRecipeToCollection(recipe);
-            } catch (UserAccountNotFoundException e) {
+            } catch (RecipeCollectionNotFoundException e) {
                 throw new RuntimeException(e);
             }
         });
@@ -75,17 +77,16 @@ public class RecipeCollectionService {
     public RecipeCollection getRecipeCollectionOfUser() {
         try {
             return recipeCollectionRepositoryPort.getRecipeCollectionOfUser();
-        } catch (UserAccountNotFoundException e) {
+        } catch (RecipeCollectionNotFoundException e) {
             throw new RuntimeException(e);
         }
     }
 
-    public void addRecipeToCollection(Recipe recipe) {
-        try {
-            recipeCollectionRepositoryPort.addRecipeToCollection(recipe);
-        } catch (UserAccountNotFoundException e) {
-            throw new RuntimeException(e);
-        }
+    public void addRecipeToCollection(Recipe recipe) throws RecipeCollectionNotFoundException {
+        recipeCollectionRepositoryPort.addRecipeToCollection(recipe);
+    }
 
+    public void updateRecipeInCollection(Recipe recipe) throws RecipeNotFoundException, RecipeCollectionNotFoundException {
+        recipeCollectionRepositoryPort.updateRecipeInCollection(recipe);
     }
 }

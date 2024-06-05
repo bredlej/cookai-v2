@@ -13,9 +13,12 @@ import com.fikafoodie.recipes.domain.ports.primary.RecipeCollectionServicePort;
 import com.fikafoodie.recipes.domain.ports.secondary.RecipeCollectionRepositoryPort;
 import com.fikafoodie.recipes.domain.ports.secondary.RecipeConfigurationPort;
 import com.fikafoodie.recipes.domain.ports.secondary.RecipeGenerationServicePort;
+import com.fikafoodie.recipes.domain.ports.secondary.RecipeNotFoundException;
 import com.fikafoodie.recipes.infrastructure.adapters.primary.aws.api.AWSRecipeCollectionControllerSecuredAPI;
+import com.fikafoodie.recipes.application.exceptions.RecipeCollectionNotFoundException;
 import com.fikafoodie.useraccount.domain.ports.primary.UserAccountSecuredServicePort;
-import com.fikafoodie.useraccount.infrastructure.adapters.primary.aws.UserAccountNotFoundException;
+import com.fikafoodie.useraccount.application.exceptions.UserAccountNotFoundException;
+import jakarta.ws.rs.core.Response;
 
 import java.util.List;
 
@@ -47,8 +50,13 @@ public class AWSRecipeCollectionController implements RecipeCollectionServicePor
     }
 
     @Override
-    public void addRecipeToCollection(Recipe recipe) {
+    public void addRecipeToCollection(Recipe recipe) throws RecipeCollectionNotFoundException {
         recipeCollectionService.addRecipeToCollection(recipe);
+    }
+
+    @Override
+    public void updateRecipeInCollection(Recipe recipe) throws RecipeNotFoundException, RecipeCollectionNotFoundException {
+        recipeCollectionService.updateRecipeInCollection(recipe);
     }
 
     @Override
@@ -61,5 +69,25 @@ public class AWSRecipeCollectionController implements RecipeCollectionServicePor
     @Override
     public RecipeCollectionDTO getRecipes() {
         return RecipeCollectionDTO.fromDomain(getRecipeCollectionOfUser());
+    }
+
+    @Override
+    public Response addRecipe(RecipeDTO recipeDTO) {
+        try {
+            addRecipeToCollection(RecipeDTO.toDomain(recipeDTO));
+        } catch (RecipeCollectionNotFoundException e) {
+            return Response.status(Response.Status.FORBIDDEN).entity(e.getMessage()).build();
+        }
+        return Response.ok().build();
+    }
+
+    @Override
+    public Response updateRecipe(RecipeDTO recipeDTO) {
+        try {
+            updateRecipeInCollection(RecipeDTO.toDomain(recipeDTO));
+            return Response.ok().build();
+        } catch (RecipeNotFoundException | RecipeCollectionNotFoundException e) {
+            return Response.status(Response.Status.FORBIDDEN).entity(e.getMessage()).build();
+        }
     }
 }
