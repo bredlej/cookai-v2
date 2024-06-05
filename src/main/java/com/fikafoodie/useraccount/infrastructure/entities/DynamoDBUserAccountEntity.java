@@ -64,4 +64,14 @@ public class DynamoDBUserAccountEntity {
 
         return entity;
     }
+
+    public static UserAccount toDomain(DynamoDBUserAccountEntity userAccountEntity) {
+        return new UserAccount(
+                new UserAccount.Id(userAccountEntity.getOwnerId()),
+                new UserAccount.Name(userAccountEntity.getName()),
+                new UserAccount.Email(userAccountEntity.getEmail()),
+                new UserAccount.Credits(userAccountEntity.getCredits()),
+                UserAccount.Status.valueOf(userAccountEntity.getStatus())
+        );
+    }
 }

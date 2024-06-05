@@ -4,7 +4,6 @@ import com.fikafoodie.kernel.qualifiers.DynamoDB;
 import com.fikafoodie.recipes.domain.aggregates.RecipeCollection;
 import com.fikafoodie.recipes.domain.entities.Recipe;
 import com.fikafoodie.recipes.domain.ports.secondary.RecipeCollectionRepositoryPort;
-import com.fikafoodie.recipes.infrastructure.converters.IngredientConverter;
 import com.fikafoodie.recipes.infrastructure.entities.DynamoDBRecipeEntity;
 import com.fikafoodie.useraccount.infrastructure.adapters.primary.aws.UserAccountNotFoundException;
 import com.fikafoodie.useraccount.infrastructure.adapters.primary.aws.api.UserAccountControllerPublicAPI;
@@ -20,8 +19,8 @@ import software.amazon.awssdk.enhanced.dynamodb.TableSchema;
 import software.amazon.awssdk.enhanced.dynamodb.model.Page;
 import software.amazon.awssdk.enhanced.dynamodb.model.PageIterable;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 import static software.amazon.awssdk.enhanced.dynamodb.model.QueryConditional.keyEqualTo;
 
@@ -50,7 +49,7 @@ public class DynamoDBRecipeCollectionRepository implements RecipeCollectionRepos
 
         RecipeCollection recipeCollection = new RecipeCollection();
         for (var item : queryResponse.items()) {
-            Recipe recipe = parseRecipeFromItem(item);
+            Recipe recipe = DynamoDBRecipeEntity.toDomain(item);//parseRecipeFromItem(item);
             recipeCollection.addRecipe(recipe);
         }
 
@@ -62,23 +61,8 @@ public class DynamoDBRecipeCollectionRepository implements RecipeCollectionRepos
         DynamoDBRecipeEntity item = DynamoDBRecipeEntity.fromDomain(recipe);
         item.setOwnerId(jwt.getClaim(UserAccountControllerPublicAPI.COGNITO_USERNAME_CLAIM));
         item.setRecipeId(UUID.randomUUID().toString());
+        item.setCreatedAt(LocalDateTime.now());
 
         recipesTable.putItem(item);
-    }
-
-    @org.jetbrains.annotations.NotNull
-    private Recipe parseRecipeFromItem(@NotNull DynamoDBRecipeEntity item) {
-        Recipe recipe = new Recipe();
-        recipe.setId(new Recipe.Id(item.getRecipeId()));
-        recipe.setName(new Recipe.Name(item.getName()));
-        recipe.setSummary(new Recipe.Summary(item.getSummary()));
-        recipe.setPicture(new Recipe.Picture(item.getPicture()));
-        recipe.setNotes(new Recipe.Notes(item.getNotes()));
-        recipe.setIngredients(new Recipe.Ingredients(item.getIngredients().stream()
-                .map(IngredientConverter::convertToDomainIngredient)
-                .toList()));
-        recipe.setInstructions(new Recipe.Instructions(item.getInstructions()));
-        recipe.setTags(new Recipe.Tags(item.getTags()));
-        return recipe;
     }
 }

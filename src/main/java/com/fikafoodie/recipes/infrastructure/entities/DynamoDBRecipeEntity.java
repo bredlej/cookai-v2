@@ -1,6 +1,7 @@
 package com.fikafoodie.recipes.infrastructure.entities;
 
 import com.fikafoodie.recipes.domain.entities.Recipe;
+import com.fikafoodie.recipes.domain.valueobjects.Ingredient;
 import com.fikafoodie.recipes.infrastructure.adapters.secondary.aws.DynamoDBRecipesTableProperties;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 import lombok.Getter;
@@ -21,7 +22,7 @@ public class DynamoDBRecipeEntity {
     private String recipeId;
     private String name;
     private String summary;
-    private List<Ingredient> ingredients;
+    private List<DynamoDBIngredient> ingredients;
     private List<String> instructions;
     private List<String> tags;
     private String picture;
@@ -45,7 +46,7 @@ public class DynamoDBRecipeEntity {
     }
 
     @DynamoDbAttribute(DynamoDBRecipesTableProperties.RECIPE_COLLECTION_INGREDIENTS_COLUMN)
-    public List<Ingredient> getIngredients() {
+    public List<DynamoDBIngredient> getIngredients() {
         return ingredients;
     }
 
@@ -84,7 +85,8 @@ public class DynamoDBRecipeEntity {
     @Getter
     @RegisterForReflection
     @DynamoDbBean
-    public static class Ingredient {
+    public static class DynamoDBIngredient {
+
         private String name;
         private double quantity;
         private String unit;
@@ -99,7 +101,7 @@ public class DynamoDBRecipeEntity {
         entity.setSummary(recipe.getSummary().value());
         entity.setIngredients(recipe.getIngredients().value().stream()
                 .map(ingredient -> {
-                    Ingredient i = new Ingredient();
+                    DynamoDBIngredient i = new DynamoDBIngredient();
                     i.setName(ingredient.getName().value());
                     i.setQuantity(ingredient.getQuantity().value());
                     i.setUnit(ingredient.getUnit().value());
@@ -113,5 +115,26 @@ public class DynamoDBRecipeEntity {
         entity.setPicture(recipe.getPicture().value());
         entity.setNotes(recipe.getNotes().value());
         return entity;
+    }
+
+    public static Recipe toDomain(DynamoDBRecipeEntity item) {
+        Recipe recipe = new Recipe();
+        recipe.setId(new Recipe.Id(item.getRecipeId()));
+        recipe.setName(new Recipe.Name(item.getName()));
+        recipe.setSummary(new Recipe.Summary(item.getSummary()));
+        recipe.setIngredients(new Recipe.Ingredients(item.getIngredients().stream()
+                .map(dynamoDBIngredient -> new Ingredient(
+                        new Ingredient.Name(dynamoDBIngredient.getName()),
+                        new Ingredient.Quantity(dynamoDBIngredient.getQuantity()),
+                        new Ingredient.Unit(dynamoDBIngredient.getUnit()),
+                        dynamoDBIngredient.isOptional(),
+                        new Ingredient.Type(dynamoDBIngredient.getType())
+                ))
+                .toList()));
+        recipe.setInstructions(new Recipe.Instructions(item.getInstructions()));
+        recipe.setTags(new Recipe.Tags(item.getTags()));
+        recipe.setPicture(new Recipe.Picture(item.getPicture()));
+        recipe.setNotes(new Recipe.Notes(item.getNotes()));
+        return recipe;
     }
 }
