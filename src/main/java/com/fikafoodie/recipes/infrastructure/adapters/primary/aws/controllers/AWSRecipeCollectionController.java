@@ -2,6 +2,7 @@ package com.fikafoodie.recipes.infrastructure.adapters.primary.aws.controllers;
 
 import com.fikafoodie.kernel.qualifiers.DynamoDB;
 import com.fikafoodie.kernel.qualifiers.InMemory;
+import com.fikafoodie.kernel.qualifiers.OpenAI;
 import com.fikafoodie.recipes.application.dto.RecipeCollectionDTO;
 import com.fikafoodie.recipes.application.dto.RecipeDTO;
 import com.fikafoodie.recipes.application.dto.RecipeGenerationIngredientsDTO;
@@ -27,7 +28,7 @@ public class AWSRecipeCollectionController implements RecipeCollectionServicePor
     private final RecipeCollectionService recipeCollectionService;
 
     public AWSRecipeCollectionController(
-            @InMemory RecipeGenerationServicePort recipeGenerationServicePort,
+            @OpenAI RecipeGenerationServicePort recipeGenerationServicePort,
             @DynamoDB RecipeCollectionRepositoryPort recipeCollectionRepositoryPort,
             UserAccountSecuredServicePort userAccountSecuredServicePort,
             @InMemory RecipeConfigurationPort recipeConfigurationPort) {
