@@ -4,9 +4,11 @@ import com.fikafoodie.useraccount.domain.entities.UserAccount;
 import com.fikafoodie.useraccount.application.exceptions.UserAccountNotFoundException;
 import io.quarkus.security.Authenticated;
 
-import java.util.Optional;
-
-@Authenticated
 public interface UserAccountSecuredRepositoryPort {
-    Optional<UserAccount> getUserAccount() throws UserAccountNotFoundException;
+    @Authenticated
+    UserAccount.Credits getCreditBalance() throws UserAccountNotFoundException;
+    @Authenticated
+    void subtractCredits(UserAccount.Credits credits) throws UserAccountNotFoundException;
+    @Authenticated
+    void addCredits(UserAccount.Credits credits) throws UserAccountNotFoundException;
 }

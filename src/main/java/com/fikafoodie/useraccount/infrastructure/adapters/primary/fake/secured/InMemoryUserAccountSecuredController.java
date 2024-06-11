@@ -21,17 +21,11 @@ public class InMemoryUserAccountSecuredController implements UserAccountSecuredS
 
     @Override
     public UserAccount.Credits getCreditBalance() throws UserAccountNotFoundException {
-        if (userAccountSecuredRepositoryPort.getUserAccount().isEmpty()) {
-            throw new UserAccountNotFoundException("User account not found");
-        }
-        return userAccountSecuredRepositoryPort.getUserAccount().get().creditBalance();
+        return userAccountSecuredRepositoryPort.getCreditBalance();
     }
 
     @Override
     public void subtractCredits(UserAccount.Credits credits) throws UserAccountNotFoundException {
-        if (userAccountSecuredRepositoryPort.getUserAccount().isEmpty()) {
-            throw new UserAccountNotFoundException("User account not found");
-        }
-        userAccountSecuredRepositoryPort.getUserAccount().get().subtractCredits(credits);
+        userAccountSecuredRepositoryPort.subtractCredits(credits);
     }
 }

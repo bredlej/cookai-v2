@@ -60,12 +60,13 @@ public class RecipeCollectionService {
         generatedRecipes.forEach(recipe -> {
             try {
                 recipeCollectionRepositoryPort.addRecipeToCollection(recipe);
-            } catch (RecipeCollectionNotFoundException e) {
+                userAccountSecuredServicePort.subtractCredits(recipeCost);
+            } catch (RecipeCollectionNotFoundException | UserAccountNotFoundException e) {
                 throw new RuntimeException(e);
             }
         });
 
-        userAccountSecuredServicePort.subtractCredits(recipeCost);
+
         return generatedRecipes;
     }
 

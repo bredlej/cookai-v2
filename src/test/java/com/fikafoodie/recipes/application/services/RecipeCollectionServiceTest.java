@@ -137,7 +137,7 @@ public class RecipeCollectionServiceTest {
         Recipe recipe = recipeWithId("id");
         recipeCollectionService.addRecipeToCollection(recipe);
 
-        Assertions.assertEquals(new UserAccount.Credits(0), (userAccountRepository).getUserAccount().get().getCredits());
+        Assertions.assertEquals(new UserAccount.Credits(0), userAccountRepository.getCreditBalance());
     }
 
     @Test
@@ -209,7 +209,7 @@ public class RecipeCollectionServiceTest {
         recipe.setName(new Recipe.Name("new name"));
         recipeCollectionService.updateRecipeInCollection(recipe);
 
-        Assertions.assertEquals(new UserAccount.Credits(0), (userAccountRepository).getUserAccount().get().getCredits());
+        Assertions.assertEquals(new UserAccount.Credits(0), userAccountRepository.getCreditBalance());
     }
 
     private static @NotNull Recipe recipeWithId(String id) {

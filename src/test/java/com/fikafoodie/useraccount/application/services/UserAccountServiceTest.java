@@ -22,7 +22,7 @@ public class UserAccountServiceTest {
                 new InMemoryUserAccountConfiguration());
 
         userAccountPublicService.registerAccount(new UserAccount.Id("id"), new UserAccount.Name("name"), new UserAccount.Email("email"));
-        Assertions.assertEquals(UserAccount.Status.NEW, ((UserAccountSecuredRepositoryPort) userAccountPublicRepositoryPort).getUserAccount().get().getStatus());
+        Assertions.assertEquals(UserAccount.Status.NEW, userAccountPublicRepositoryPort.getAccountStatus(new UserAccount.Name("name")).get());
     }
 
     @Test
@@ -33,7 +33,7 @@ public class UserAccountServiceTest {
                 new InMemoryUserAccountConfiguration());
 
         userAccountPublicService.registerAccount(new UserAccount.Id("id"), new UserAccount.Name("name"), new UserAccount.Email("email"));
-        Assertions.assertEquals(new UserAccount.Credits(0), ((UserAccountSecuredRepositoryPort) userAccountPublicRepositoryPort).getUserAccount().get().creditBalance());
+        Assertions.assertEquals(new UserAccount.Credits(0), ((UserAccountSecuredRepositoryPort) userAccountPublicRepositoryPort).getCreditBalance());
     }
 
     @Test
@@ -45,7 +45,7 @@ public class UserAccountServiceTest {
 
         userAccountPublicService.registerAccount(new UserAccount.Id("id"), new UserAccount.Name("name"), new UserAccount.Email("email"));
         userAccountPublicService.confirmAccount(new UserAccount.Name("name"));
-        Assertions.assertEquals(UserAccount.Status.ACTIVE, ((UserAccountSecuredRepositoryPort) userAccountPublicRepositoryPort).getUserAccount().get().getStatus());
+        Assertions.assertEquals(UserAccount.Status.ACTIVE, userAccountPublicRepositoryPort.getAccountStatus(new UserAccount.Name("name")).get());
     }
 
     @Test
@@ -58,7 +58,7 @@ public class UserAccountServiceTest {
 
         userAccountPublicService.registerAccount(new UserAccount.Id("id"), new UserAccount.Name("name"), new UserAccount.Email("email"));
         userAccountPublicService.confirmAccount(new UserAccount.Name("name"));
-        Assertions.assertEquals(new UserAccount.Credits(5), ((UserAccountSecuredRepositoryPort) userAccountPublicRepositoryPort).getUserAccount().get().creditBalance());
+        Assertions.assertEquals(new UserAccount.Credits(5), ((UserAccountSecuredRepositoryPort) userAccountPublicRepositoryPort).getCreditBalance());
     }
 
     @Test

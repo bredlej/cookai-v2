@@ -1,6 +1,7 @@
 package com.fikafoodie.useraccount.infrastructure.adapters.secondary.fake;
 
 import com.fikafoodie.kernel.qualifiers.InMemory;
+import com.fikafoodie.useraccount.application.exceptions.UserAccountNotFoundException;
 import com.fikafoodie.useraccount.domain.entities.UserAccount;
 import com.fikafoodie.useraccount.domain.ports.secondary.UserAccountPublicRepositoryPort;
 import com.fikafoodie.useraccount.domain.ports.secondary.UserAccountSecuredRepositoryPort;
@@ -37,8 +38,19 @@ public class InMemoryUserAccountRepository implements UserAccountPublicRepositor
         return userAccount == null ? Optional.empty() : Optional.of(userAccount.getStatus());
     }
 
+
     @Override
-    public Optional<UserAccount> getUserAccount() {
-        return Optional.of(userAccount);
+    public UserAccount.Credits getCreditBalance() {
+        return userAccount.getCredits();
+    }
+
+    @Override
+    public void subtractCredits(UserAccount.Credits credits) {
+        userAccount.subtractCredits(credits);
+    }
+
+    @Override
+    public void addCredits(UserAccount.Credits credits) {
+        userAccount.addCredits(credits);
     }
 }

@@ -19,21 +19,12 @@ public class AWSUserAccountSecuredController implements UserAccountSecuredServic
 
     @Override
     public UserAccount.Credits getCreditBalance() throws UserAccountNotFoundException {
-        if (securedRepositoryPort.getUserAccount().isEmpty()) {
-            throw new UserAccountNotFoundException("User account not found");
-        }
-        else {
-            return securedRepositoryPort.getUserAccount().get().creditBalance();
-        }
+       return securedRepositoryPort.getCreditBalance();
     }
 
     @Override
     public void subtractCredits(UserAccount.Credits credits) throws UserAccountNotFoundException {
-        if (securedRepositoryPort.getUserAccount().isEmpty()) {
-            throw new UserAccountNotFoundException("User account not found");
-        }
-        else {
-            securedRepositoryPort.getUserAccount().get().subtractCredits(credits);
-        }
+        securedRepositoryPort.subtractCredits(credits);
+
     }
 }

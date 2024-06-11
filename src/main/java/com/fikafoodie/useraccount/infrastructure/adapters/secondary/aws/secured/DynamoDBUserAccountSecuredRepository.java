@@ -32,20 +32,45 @@ public class DynamoDBUserAccountSecuredRepository implements UserAccountSecuredR
         this.userAccountsTable = dynamoDbEnhancedClient.table(userAccountsTableName, TableSchema.fromBean(DynamoDBUserAccountEntity.class));
     }
 
-    @Override
-    public Optional<UserAccount> getUserAccount() throws UserAccountNotFoundException {
-        if (jwt.getClaim(UserAccountControllerPublicAPI.COGNITO_USERNAME_CLAIM) == null) {
-            throw new UserAccountNotFoundException("User account not found");
-        }
-        return Optional.of(
-                getUserAccount(
-                        new UserAccount.Name(
-                                jwt.getClaim(UserAccountControllerPublicAPI.COGNITO_USERNAME_CLAIM)
-                        )));
+    public UserAccount getUserAccount(UserAccount.Name name) {
+        return DynamoDBUserAccountEntity.toDomain(getUserAccountEntity(name));
     }
 
-    public UserAccount getUserAccount(UserAccount.Name name) {
-        DynamoDBUserAccountEntity userAccountEntity = userAccountsTable.getItem(r -> r.key(k -> k.partitionValue(name.value())));
-        return DynamoDBUserAccountEntity.toDomain(userAccountEntity);
+    private DynamoDBUserAccountEntity getUserAccountEntity(UserAccount.Name name) {
+        return userAccountsTable.getItem(r -> r.key(k -> k.partitionValue(name.value())));
+    }
+
+    @Override
+    public UserAccount.Credits getCreditBalance() throws UserAccountNotFoundException {
+        var name = new UserAccount.Name(jwt.getClaim(UserAccountControllerPublicAPI.COGNITO_USERNAME_CLAIM));
+        if (getUserAccountEntity(name) == null) {
+            throw new UserAccountNotFoundException("User account not found");
+        }
+        return getUserAccount(name).creditBalance();
+    }
+
+    @Override
+    public void subtractCredits(UserAccount.Credits credits) throws UserAccountNotFoundException {
+        var name = new UserAccount.Name(jwt.getClaim(UserAccountControllerPublicAPI.COGNITO_USERNAME_CLAIM));
+        var entity = getUserAccountEntity(name);
+        if (entity == null) {
+            throw new UserAccountNotFoundException("User account not found");
+        }
+        entity.setCredits(entity.getCredits() - credits.value());
+        if (entity.getCredits() < 0) {
+            entity.setCredits(0);
+        }
+        userAccountsTable.putItem(entity);
+    }
+
+    @Override
+    public void addCredits(UserAccount.Credits credits) throws UserAccountNotFoundException {
+        var name = new UserAccount.Name(jwt.getClaim(UserAccountControllerPublicAPI.COGNITO_USERNAME_CLAIM));
+        var entity = getUserAccountEntity(name);
+        if (entity == null) {
+            throw new UserAccountNotFoundException("User account not found");
+        }
+        entity.setCredits(entity.getCredits() + credits.value());
+        userAccountsTable.putItem(entity);
     }
 }
