@@ -5,10 +5,10 @@ import com.fikafoodie.useraccount.domain.entities.UserAccount;
 import com.fikafoodie.useraccount.domain.ports.primary.UserAccountSecuredServicePort;
 import com.fikafoodie.useraccount.domain.ports.secondary.UserAccountSecuredRepositoryPort;
 import com.fikafoodie.useraccount.application.exceptions.UserAccountNotFoundException;
-import jakarta.enterprise.context.RequestScoped;
+import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 
-@RequestScoped
+@ApplicationScoped
 public class AWSUserAccountSecuredController implements UserAccountSecuredServicePort {
     private final UserAccountSecuredRepositoryPort securedRepositoryPort;
 

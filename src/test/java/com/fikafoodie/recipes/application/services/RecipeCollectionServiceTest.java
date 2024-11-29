@@ -7,6 +7,8 @@ import com.fikafoodie.recipes.domain.ports.secondary.RecipeConfigurationPort;
 import com.fikafoodie.recipes.domain.ports.secondary.RecipeNotFoundException;
 import com.fikafoodie.recipes.domain.valueobjects.Ingredient;
 import com.fikafoodie.recipes.application.exceptions.RecipeCollectionNotFoundException;
+import com.fikafoodie.recipes.infrastructure.adapters.secondary.fake.FileSystemPictureStorageAdapter;
+import com.fikafoodie.recipes.infrastructure.adapters.secondary.fake.InMemoryPictureGenerationAdapter;
 import com.fikafoodie.recipes.infrastructure.adapters.secondary.fake.InMemoryRecipeGenerationAdapter;
 import com.fikafoodie.recipes.infrastructure.adapters.secondary.fake.InMemoryRecipeCollectionRepository;
 import com.fikafoodie.useraccount.domain.entities.UserAccount;
@@ -45,7 +47,11 @@ public class RecipeCollectionServiceTest {
                 new InMemoryRecipeGenerationAdapter(),
                 new InMemoryRecipeCollectionRepository(),
                 new InMemoryUserAccountSecuredController(userAccountRepository),
-                recipeConfiguration);
+                recipeConfiguration,
+                new InMemoryPictureGenerationAdapter(),
+                new FileSystemPictureStorageAdapter(),
+                new UserAccount.Name("test-user")
+        );
 
         List<Recipe> generatedRecipes = recipeCollectionService.generateRecipesWithIngredients(List.of("ingredient1", "ingredient2"));
         RecipeCollection recipeCollection = recipeCollectionService.getRecipeCollectionOfUser();
@@ -69,11 +75,41 @@ public class RecipeCollectionServiceTest {
                 new InMemoryRecipeGenerationAdapter(),
                 new InMemoryRecipeCollectionRepository(),
                 new InMemoryUserAccountSecuredController(userAccountRepository),
-                recipeConfiguration);
+                recipeConfiguration,
+                new InMemoryPictureGenerationAdapter(),
+                new FileSystemPictureStorageAdapter(),
+                new UserAccount.Name("test-user"));
 
         recipeCollectionService.generateRecipesWithIngredients(List.of("ingredient1", "ingredient2"));
 
         Assertions.assertEquals(new UserAccount.Credits(0), userAccountSecuredController.getCreditBalance());
+    }
+
+    @Test
+    void generatedRecipesShouldHavePicturesStored() throws InsufficientCreditsException, UserAccountNotFoundException {
+        InMemoryUserAccountRepository userAccountRepository = new InMemoryUserAccountRepository();
+        UserAccountPublicServicePort userAccountController = new InMemoryUserAccountPublicController(
+                userAccountRepository,
+                () -> new UserAccount.Credits(1)
+        );
+
+        userAccountController.registerAccount(new UserAccount.Name("name"), new UserAccount.Email("email"), new Password("password"));
+        userAccountController.confirmAccount(new UserAccount.Name("name"));
+
+        RecipeCollectionService recipeCollectionService = new RecipeCollectionService(
+                new InMemoryRecipeGenerationAdapter(),
+                new InMemoryRecipeCollectionRepository(),
+                new InMemoryUserAccountSecuredController(userAccountRepository),
+                recipeConfiguration,
+                new InMemoryPictureGenerationAdapter(),
+                new FileSystemPictureStorageAdapter(),
+                new UserAccount.Name("test-user"));
+
+        recipeCollectionService.generateRecipesWithIngredients(List.of("ingredient1", "ingredient2"));
+
+        recipeCollectionService.getRecipeCollectionOfUser().getRecipes().value().forEach(recipe -> {
+            Assertions.assertNotEquals("", recipe.getPicture().value());
+        });
     }
 
     @Test
@@ -90,7 +126,10 @@ public class RecipeCollectionServiceTest {
                 new InMemoryRecipeGenerationAdapter(),
                 new InMemoryRecipeCollectionRepository(),
                 new InMemoryUserAccountSecuredController(userAccountRepository),
-                recipeConfiguration);
+                recipeConfiguration,
+                new InMemoryPictureGenerationAdapter(),
+                new FileSystemPictureStorageAdapter(),
+                new UserAccount.Name("test-user"));
 
         Assertions.assertThrows(InsufficientCreditsException.class, () -> recipeCollectionService.generateRecipesWithIngredients(List.of("ingredient1", "ingredient2")));
     }
@@ -109,7 +148,10 @@ public class RecipeCollectionServiceTest {
                 new InMemoryRecipeGenerationAdapter(),
                 new InMemoryRecipeCollectionRepository(),
                 new InMemoryUserAccountSecuredController(userAccountRepository),
-                recipeConfiguration);
+                recipeConfiguration,
+                new InMemoryPictureGenerationAdapter(),
+                new FileSystemPictureStorageAdapter(),
+                new UserAccount.Name("test-user"));
 
         Recipe recipe = recipeWithId("id");
         recipeCollectionService.addRecipeToCollection(recipe);
@@ -132,7 +174,11 @@ public class RecipeCollectionServiceTest {
                 new InMemoryRecipeGenerationAdapter(),
                 new InMemoryRecipeCollectionRepository(),
                 new InMemoryUserAccountSecuredController(userAccountRepository),
-                recipeConfiguration);
+                recipeConfiguration,
+                new InMemoryPictureGenerationAdapter(),
+                new FileSystemPictureStorageAdapter(),
+                new UserAccount.Name("test-user")
+        );
 
         Recipe recipe = recipeWithId("id");
         recipeCollectionService.addRecipeToCollection(recipe);
@@ -154,7 +200,11 @@ public class RecipeCollectionServiceTest {
                 new InMemoryRecipeGenerationAdapter(),
                 new InMemoryRecipeCollectionRepository(),
                 new InMemoryUserAccountSecuredController(userAccountRepository),
-                recipeConfiguration);
+                recipeConfiguration,
+                new InMemoryPictureGenerationAdapter(),
+                new FileSystemPictureStorageAdapter(),
+                new UserAccount.Name("test-user")
+        );
 
         Recipe recipe = recipeWithId("id");
         recipeCollectionService.addRecipeToCollection(recipe);
@@ -180,7 +230,11 @@ public class RecipeCollectionServiceTest {
                 new InMemoryRecipeGenerationAdapter(),
                 new InMemoryRecipeCollectionRepository(),
                 new InMemoryUserAccountSecuredController(userAccountRepository),
-                recipeConfiguration);
+                recipeConfiguration,
+                new InMemoryPictureGenerationAdapter(),
+                new FileSystemPictureStorageAdapter(),
+                new UserAccount.Name("test-user")
+        );
 
         Recipe recipe = recipeWithId("not existing id");
 
@@ -201,7 +255,11 @@ public class RecipeCollectionServiceTest {
                 new InMemoryRecipeGenerationAdapter(),
                 new InMemoryRecipeCollectionRepository(),
                 new InMemoryUserAccountSecuredController(userAccountRepository),
-                recipeConfiguration);
+                recipeConfiguration,
+                new InMemoryPictureGenerationAdapter(),
+                new FileSystemPictureStorageAdapter(),
+                new UserAccount.Name("test-user")
+        );
 
         Recipe recipe = recipeWithId("id");
         recipeCollectionService.addRecipeToCollection(recipe);

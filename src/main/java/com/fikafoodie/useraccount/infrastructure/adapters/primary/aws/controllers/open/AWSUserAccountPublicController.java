@@ -15,7 +15,7 @@ import com.fikafoodie.useraccount.infrastructure.adapters.primary.aws.api.UserAc
 import com.fikafoodie.useraccount.infrastructure.adapters.primary.aws.dto.AuthenticateResponseDTO;
 import io.vertx.core.impl.logging.Logger;
 import io.vertx.core.impl.logging.LoggerFactory;
-import jakarta.enterprise.context.RequestScoped;
+import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.core.Response;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
@@ -25,7 +25,7 @@ import software.amazon.awssdk.services.cognitoidentityprovider.model.*;
 
 import java.util.Optional;
 
-@RequestScoped
+@ApplicationScoped
 public class AWSUserAccountPublicController implements UserAccountPublicServicePort, UserAccountControllerPublicAPI {
     private final Logger logger = LoggerFactory.getLogger(AWSUserAccountPublicController.class);
     private final UserAccountPublicService userAccountPublicService;

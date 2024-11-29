@@ -7,7 +7,7 @@ import com.fikafoodie.useraccount.application.exceptions.UserAccountNotFoundExce
 import com.fikafoodie.useraccount.infrastructure.adapters.primary.aws.api.UserAccountControllerPublicAPI;
 import com.fikafoodie.useraccount.infrastructure.adapters.secondary.aws.DynamoDBUserAccountTableProperties;
 import com.fikafoodie.useraccount.infrastructure.entities.DynamoDBUserAccountEntity;
-import jakarta.enterprise.context.RequestScoped;
+import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.eclipse.microprofile.jwt.JsonWebToken;
@@ -16,9 +16,7 @@ import software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedClient;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbTable;
 import software.amazon.awssdk.enhanced.dynamodb.TableSchema;
 
-import java.util.Optional;
-
-@RequestScoped
+@ApplicationScoped
 @DynamoDB
 public class DynamoDBUserAccountSecuredRepository implements UserAccountSecuredRepositoryPort, DynamoDBUserAccountTableProperties {
 

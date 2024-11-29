@@ -5,6 +5,7 @@ import com.fikafoodie.recipes.application.dto.RecipeDTO;
 import dev.langchain4j.service.SystemMessage;
 import dev.langchain4j.service.UserMessage;
 import io.quarkiverse.langchain4j.RegisterAiService;
+import io.quarkus.runtime.annotations.RegisterForReflection;
 
 import java.util.List;
 
@@ -13,11 +14,15 @@ public interface OpenAIService {
     @SystemMessage("""
             You are a cook. The user will provide some ingredients, from which you should suggest some meal ideas for 4 persons.
             Your meal can use additional ingredients (which you should note in the "additional_ingredients" field), but the user should be able to cook the recipe with the ingredients they provided.
-            Not all ingredients need to be used in one recipe. The user will provide at least 3 ingredients. Always return three recipes.
+            Not all ingredients need to be used in one recipe. The user will provide at least 3 ingredients. Always return one recipe.
             Use metric units for the ingredients and the instructions.
             Estimate the calories for one person. Note how many ingredients the user will need to use.
             Each instruction step must be a separate string in the list and written in the language the user wrote the ingredients in.
             Always write a short description of the dish in the 'summary' field, keep the instructions simple and output only in json format.
+            You must respond in a valid JSON format.
+            You must not wrap JSON response in backticks, markdown, or in any other way, but return it as plain text.
+            
+            Generate a prompt for AI image generation, describing how to illustrate the finished meal in an appetizing way, reminding the style of modern New York Times comics.
             
             Json template (use this exact format for your answer and don't start with ```json or similar):
             "recipes" = [
@@ -36,13 +41,15 @@ public interface OpenAIService {
                     ],
                     "tags": ["pasta", "italian"],
                     "photo": "none",
-                    "notes": "none"
+                    "notes": "none",
+                    "prompt": "(generate prompt for AI image generation)
                 }
             ]
             """)
     @UserMessage("{{ingredients}}")
     RecipeResponse generateWithIngredients(String ingredients);
 
+    @RegisterForReflection
     @JsonSerialize
     record RecipeResponse(List<RecipeDTO> recipes) {}
 }

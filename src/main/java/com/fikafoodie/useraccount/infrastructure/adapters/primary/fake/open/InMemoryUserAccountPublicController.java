@@ -8,12 +8,13 @@ import com.fikafoodie.useraccount.domain.ports.secondary.UserAccountConfiguratio
 import com.fikafoodie.useraccount.domain.ports.secondary.UserAccountPublicRepositoryPort;
 import com.fikafoodie.useraccount.domain.valueobjects.Password;
 import com.fikafoodie.useraccount.application.exceptions.UserAccountNotFoundException;
+import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 
 import java.util.UUID;
 
-@RequestScoped
+@ApplicationScoped
 @InMemory
 public class InMemoryUserAccountPublicController implements UserAccountPublicServicePort {
     private final UserAccountPublicService userAccountPublicService;

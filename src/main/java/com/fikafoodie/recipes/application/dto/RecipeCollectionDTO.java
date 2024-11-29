@@ -1,10 +1,12 @@
 package com.fikafoodie.recipes.application.dto;
 
 import com.fikafoodie.recipes.domain.aggregates.RecipeCollection;
+import io.quarkus.runtime.annotations.RegisterForReflection;
 import lombok.Data;
 
 import java.util.List;
 
+@RegisterForReflection
 @Data
 public class RecipeCollectionDTO {
     private List<RecipeDTO> recipes;

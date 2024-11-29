@@ -7,5 +7,4 @@ import com.fikafoodie.useraccount.application.exceptions.UserAccountNotFoundExce
 public interface UserAccountPublicServicePort {
     void registerAccount(UserAccount.Name name, UserAccount.Email email, Password password);
     void confirmAccount(UserAccount.Name name) throws UserAccountNotFoundException;
-
 }

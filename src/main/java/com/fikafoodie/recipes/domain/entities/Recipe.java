@@ -18,6 +18,7 @@ public class Recipe {
     private Picture picture = new Picture("");
     private Notes notes = new Notes("");
     private LocalDateTime creationDate = LocalDateTime.now();
+    private ImageGenerationPrompt prompt = new ImageGenerationPrompt("");
 
     public record Id(String value) {
         public Id {
@@ -79,6 +80,14 @@ public class Recipe {
         public Notes {
             if (value == null) {
                 throw new IllegalArgumentException("Notes cannot be null");
+            }
+        }
+    }
+
+    public record ImageGenerationPrompt(String value) {
+        public ImageGenerationPrompt {
+            if (value == null) {
+                throw new IllegalArgumentException("Prompt cannot be null");
             }
         }
     }

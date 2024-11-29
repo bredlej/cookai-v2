@@ -1,10 +1,12 @@
 package com.fikafoodie.recipes.application.dto;
 
 import com.fikafoodie.recipes.domain.entities.Recipe;
+import io.quarkus.runtime.annotations.RegisterForReflection;
 import lombok.Data;
 
 import java.util.List;
 
+@RegisterForReflection
 @Data
 public class RecipeDTO {
     private String id;
@@ -15,6 +17,7 @@ public class RecipeDTO {
     private List<String> tags;
     private String photo;
     private String notes;
+    private String prompt;
 
     public static RecipeDTO fromDomain(Recipe recipe) {
         RecipeDTO recipeDTO = new RecipeDTO();
@@ -39,6 +42,7 @@ public class RecipeDTO {
         recipe.setTags(new Recipe.Tags(recipeDTO.getTags()));
         recipe.setPicture(new Recipe.Picture(recipeDTO.getPhoto()));
         recipe.setNotes(new Recipe.Notes(recipeDTO.getNotes()));
+        recipe.setPrompt(new Recipe.ImageGenerationPrompt(recipeDTO.getPrompt()));
         return recipe;
     }
 }

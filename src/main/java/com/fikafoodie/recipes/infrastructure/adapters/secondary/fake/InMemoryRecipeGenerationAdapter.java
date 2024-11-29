@@ -8,13 +8,14 @@ import com.fikafoodie.recipes.domain.entities.Recipe;
 import com.fikafoodie.recipes.domain.ports.secondary.RecipeGenerationServicePort;
 import io.vertx.core.impl.logging.Logger;
 import io.vertx.core.impl.logging.LoggerFactory;
+import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.context.RequestScoped;
 
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-@RequestScoped
+@ApplicationScoped
 @InMemory
 public class InMemoryRecipeGenerationAdapter implements RecipeGenerationServicePort {
     List<Recipe> generatedRecipes = new ArrayList<>();

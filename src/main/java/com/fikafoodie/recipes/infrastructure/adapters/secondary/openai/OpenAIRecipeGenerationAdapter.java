@@ -4,12 +4,12 @@ import com.fikafoodie.kernel.qualifiers.OpenAI;
 import com.fikafoodie.recipes.application.dto.RecipeDTO;
 import com.fikafoodie.recipes.domain.entities.Recipe;
 import com.fikafoodie.recipes.domain.ports.secondary.RecipeGenerationServicePort;
-import jakarta.enterprise.context.RequestScoped;
+import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 
 import java.util.List;
 
-@RequestScoped
+@ApplicationScoped
 @OpenAI
 public class OpenAIRecipeGenerationAdapter implements RecipeGenerationServicePort {
 

@@ -88,8 +88,9 @@
     ],
     "id": "g-1",
     "tags": [],
-    "photo": "/img/bell_peppers.webp",
-    "notes": ""
+    "photo": "",
+    "notes": "",
+    "prompt": "A stuffed bell pepper recipe with minced meat, onions, and tomatoes."
   },
   {
     "name": "Apple Crisp",
@@ -150,8 +151,9 @@
     ],
     "id": "g-2",
     "tags": [],
-    "photo": "https://fikafoodie-pictures.s3.eu-west-1.amazonaws.com/usr/bredlej/apple_crisp.webp",
-    "notes": ""
+    "photo": "",
+    "notes": "",
+    "prompt": "A warm, comforting dessert with a crispy oat topping."
   },
   {
     "name": "Apple Oatmeal",
@@ -210,8 +212,9 @@
     ],
     "id": "g-3",
     "tags": [],
-    "photo": "/img/apple_oatmeal.webp",
-    "notes": ""
+    "photo": "",
+    "notes": "",
+    "prompt": "Healthy and hearty apple-flavored oatmeal for breakfast."
   },
   {
     "name": "Apple Cinnamon Muffins",
@@ -294,7 +297,8 @@
     ],
     "id": "g-4",
     "tags": [],
-    "photo": "/img/apple_muffins.webp",
-    "notes": ""
+    "photo": "",
+    "notes": "",
+    "prompt": "Delicious muffins with a hint of cinnamon and apple chunks."
   }
 ]

@@ -8,7 +8,7 @@ import com.fikafoodie.recipes.domain.ports.secondary.RecipeCollectionRepositoryP
 import com.fikafoodie.recipes.domain.ports.secondary.RecipeNotFoundException;
 import com.fikafoodie.recipes.infrastructure.entities.DynamoDBRecipeEntity;
 import com.fikafoodie.useraccount.infrastructure.adapters.primary.aws.api.UserAccountControllerPublicAPI;
-import jakarta.enterprise.context.RequestScoped;
+import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.eclipse.microprofile.jwt.JsonWebToken;
@@ -21,11 +21,9 @@ import software.amazon.awssdk.enhanced.dynamodb.TableSchema;
 import software.amazon.awssdk.enhanced.dynamodb.model.Page;
 import software.amazon.awssdk.enhanced.dynamodb.model.PageIterable;
 
-import java.util.UUID;
-
 import static software.amazon.awssdk.enhanced.dynamodb.model.QueryConditional.keyEqualTo;
 
-@RequestScoped
+@ApplicationScoped
 @DynamoDB
 public class DynamoDBRecipeCollectionRepository implements RecipeCollectionRepositoryPort {
 
@@ -66,7 +64,6 @@ public class DynamoDBRecipeCollectionRepository implements RecipeCollectionRepos
 
         DynamoDBRecipeEntity item = DynamoDBRecipeEntity.fromDomain(recipe);
         item.setOwnerId(jwt.getClaim(UserAccountControllerPublicAPI.COGNITO_USERNAME_CLAIM));
-        item.setRecipeId(UUID.randomUUID().toString());
 
         recipesTable.putItem(item);
     }
